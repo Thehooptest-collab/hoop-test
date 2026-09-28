@@ -175,248 +175,248 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 
 <script>
 // Every player's hints follow the same fixed category order:
-const CATEGORIES = ["Origin","Path to Pros","Draft","Signature","Teams","Accolades","Nickname","Number"];
+const CATEGORIES = ["Origin","College Career","Draft","Position","Teams","Accolades","Nickname","Number"];
 
 const PLAYERS = [
   { name:"LeBron James", hints:[
-    "High school phenom from Akron, Ohio, hyped as a pro before he ever played one.",
-    "Skipped college entirely, going straight from high school to the draft.",
-    "Drafted #1 overall by the team from his home state.",
-    "Known for elite basketball IQ and being a triple-double threat at forward.",
+    "Grew up in Ohio.",
+    "Didn't attend college.",
+    "Pick #1, 2003 NBA Draft.",
+    "Small Forward.",
     "Has played for three different NBA franchises.",
     "Won championships representing two different conferences.",
     "Nicknamed 'King James'.",
     "Has worn number 23 and number 6." ] },
   { name:"Stephen Curry", hints:[
     "Son of a former NBA sharpshooter, grew up around the league.",
-    "Played college ball at a small mid-major, not a basketball powerhouse.",
-    "Drafted 7th overall in 2009.",
-    "Redefined how far from the basket a jump shot could be taken.",
+    "Attended Davidson College.",
+    "Pick #7, 2009 NBA Draft.",
+    "Point Guard.",
     "Has played his entire career for one Bay Area franchise.",
     "Won back-to-back MVPs, one of them unanimous.",
     "Known simply as 'Chef' for how he 'cooks' defenders.",
     "Wears number 30." ] },
   { name:"Giannis Antetokounmpo", hints:[
-    "Born in Athens to Nigerian immigrant parents.",
-    "Came up through a small pro league in Greece before entering the draft.",
-    "Drafted in the middle of the first round in 2013.",
-    "Uses enormous strides to cover the court in just a few steps.",
+    "Born in Europe to immigrant parents from West Africa.",
+    "Didn't attend college.",
+    "Pick #15, 2013 NBA Draft.",
+    "Power Forward.",
     "Has played his entire career for one Midwest franchise.",
     "Won back-to-back MVP awards and later a championship.",
     "Nicknamed 'The Greek Freak'.",
     "Wears number 34." ] },
   { name:"Kevin Durant", hints:[
     "Grew up in the DC/Maryland area.",
-    "Played just one college season before turning pro.",
-    "Drafted 2nd overall, one pick after a since-forgotten bust.",
-    "A seven-footer who shoots and handles like a guard.",
+    "Attended the University of Texas.",
+    "Pick #2, 2007 NBA Draft.",
+    "Small Forward.",
     "Has played for several different NBA franchises over his career.",
     "Won a scoring title while still in his early 20s.",
     "Known simply by the initials 'KD'.",
     "Has worn number 35 and number 7." ] },
   { name:"Nikola Jokic", hints:[
     "From a small city in Serbia.",
-    "Came from a European pro league most casual fans hadn't heard of.",
-    "Drafted in the second round, famously during a TV commercial break.",
-    "An elite passer despite playing center.",
+    "Didn't attend college.",
+    "Pick #41, 2014 NBA Draft.",
+    "Center.",
     "Has played his entire career for one Rocky Mountain franchise.",
     "Won MVP multiple times and later a championship.",
     "Nicknamed 'The Joker'.",
     "Wears number 15." ] },
   { name:"Kobe Bryant", hints:[
-    "Spent part of his childhood in Italy, where his father played pro ball.",
-    "Skipped college and went straight from high school to the pros.",
-    "Drafted 13th overall, then immediately traded on draft night.",
-    "Known for a relentless, high-volume scoring mentality.",
+    "Spent part of his childhood living abroad, where his father played professionally.",
+    "Didn't attend college.",
+    "Pick #13, 1996 NBA Draft.",
+    "Shooting Guard.",
     "Played his entire 20-year career for one franchise.",
     "Won five championships across two distinct title runs.",
     "Nicknamed 'Black Mamba'.",
     "Wore number 8, then switched to number 24." ] },
   { name:"Michael Jordan", hints:[
     "Grew up in Wilmington, North Carolina.",
-    "Hit a championship-winning shot as a college freshman.",
-    "Drafted 3rd overall in 1984.",
-    "Famous for an image of him soaring toward the rim, legs split.",
+    "Attended the University of North Carolina.",
+    "Pick #3, 1984 NBA Draft.",
+    "Shooting Guard.",
     "Played for one franchise through his whole prime, plus a brief final stint elsewhere.",
     "Never lost an NBA Finals series he played in.",
     "Nicknamed 'Air' and 'His Airness'.",
     "Wore number 23 for nearly his entire career." ] },
   { name:"Luka Doncic", hints:[
-    "From Ljubljana, Slovenia.",
-    "Started his professional career in Europe as a teenager.",
-    "Drafted 3rd overall, then immediately traded on draft night.",
-    "Known for step-back three-pointers and a deliberate, methodical pace.",
+    "From a small country in Central Europe.",
+    "Didn't attend college.",
+    "Pick #3, 2018 NBA Draft.",
+    "Point Guard.",
     "Started his NBA career in Texas before a shocking trade to Los Angeles.",
     "Named the best player in Europe before ever playing an NBA game.",
     "Sometimes called 'Luka Magic'.",
     "Wears number 77." ] },
   { name:"Tim Duncan", hints:[
-    "Grew up on the island of St. Croix in the Virgin Islands.",
-    "Played four full years of college basketball before turning pro.",
-    "Drafted 1st overall in 1997.",
-    "Relied on fundamentals and a signature bank shot rather than flash.",
+    "Grew up on a Caribbean island.",
+    "Attended Wake Forest University.",
+    "Pick #1, 1997 NBA Draft.",
+    "Power Forward.",
     "Played his entire 19-year career for one Texas franchise.",
     "Won championships in three different decades.",
     "Nicknamed 'The Big Fundamental'.",
     "Wears number 21." ] },
   { name:"Shaquille O'Neal", hints:[
     "Moved often as a kid because his stepfather was in the Army.",
-    "Played college ball in Louisiana before turning pro.",
-    "Drafted 1st overall in 1992.",
-    "Dominated with sheer size and strength in the post.",
+    "Attended Louisiana State University.",
+    "Pick #1, 1992 NBA Draft.",
+    "Center.",
     "Formed a famous, combustible duo with a young guard in Los Angeles.",
     "Won Finals MVP three years in a row.",
     "Has gone by dozens of nicknames, including 'The Big Aristotle'.",
     "Wore number 34 and number 32." ] },
   { name:"Allen Iverson", hints:[
     "Grew up in Hampton, Virginia, in poverty.",
-    "Played college ball at Georgetown under a legendary coach.",
-    "Drafted 1st overall despite being one of the smallest players in the league.",
-    "Known for an unmatched first step and a signature crossover dribble.",
+    "Attended Georgetown University.",
+    "Pick #1, 1996 NBA Draft.",
+    "Point Guard.",
     "Led an underdog Finals run for a Philadelphia franchise.",
     "Won MVP the same year he led that unlikely Finals run.",
     "Nicknamed 'The Answer'.",
     "Wears number 3." ] },
   { name:"Dirk Nowitzki", hints:[
-    "From Wurzburg, Germany.",
-    "Grew up playing handball before switching to basketball.",
-    "Drafted 9th overall, then immediately traded on draft night.",
-    "Known for a nearly unblockable one-legged fadeaway jumper.",
+    "From Germany.",
+    "Didn't attend college.",
+    "Pick #9, 1998 NBA Draft.",
+    "Power Forward.",
     "Played his entire 21-year career for one Texas franchise.",
     "Won regular-season MVP the year before winning a title.",
     "Early on, some called him the 'German Wunderkind'.",
     "Wears number 41." ] },
   { name:"Magic Johnson", hints:[
     "Grew up in Lansing, Michigan.",
-    "Won a national title as a college sophomore before turning pro.",
-    "Drafted 1st overall in 1979.",
-    "A 6'9\" point guard who could dominate at every position on the floor.",
+    "Attended Michigan State University.",
+    "Pick #1, 1979 NBA Draft.",
+    "Point Guard.",
     "Played his entire career for one Los Angeles franchise.",
     "Won multiple championships and MVP awards through the 1980s.",
     "Nicknamed 'Magic'.",
     "Wears number 32." ] },
   { name:"Larry Bird", hints:[
-    "Grew up in French Lick, Indiana.",
-    "Led his college team to a title game after transferring schools.",
-    "Drafted 6th overall a year before he actually joined the league.",
-    "Known for a deadly outside shot and relentless trash talk.",
+    "Grew up in a small town in Indiana.",
+    "Attended Indiana State University.",
+    "Pick #6, 1978 NBA Draft.",
+    "Small Forward.",
     "Played his entire career for one Boston franchise.",
     "Won three consecutive MVP awards in the mid-1980s.",
     "Nicknamed 'The Hick from French Lick'.",
     "Wears number 33." ] },
   { name:"Hakeem Olajuwon", hints:[
-    "Born and raised in Lagos, Nigeria.",
-    "Didn't play organized basketball until his teens, having grown up on soccer and handball.",
-    "Drafted 1st overall in 1984, ahead of two future Hall of Famers.",
-    "Known for a series of unstoppable post footwork moves.",
+    "Born and raised in West Africa.",
+    "Attended the University of Houston.",
+    "Pick #1, 1984 NBA Draft.",
+    "Center.",
     "Played nearly his entire career for one Texas franchise.",
     "Won back-to-back championships in the mid-1990s.",
     "Nicknamed 'The Dream'.",
     "Wears number 34." ] },
   { name:"Kareem Abdul-Jabbar", hints:[
     "Grew up in New York City.",
-    "Won three straight college championships before turning pro.",
-    "Drafted 1st overall in 1969, under his birth name.",
-    "Known for an unblockable skyhook shot.",
+    "Attended UCLA.",
+    "Pick #1, 1969 NBA Draft.",
+    "Center.",
     "Played for two different NBA franchises across his career.",
     "Retired as the league's all-time leading scorer, a record held for decades.",
     "Changed his name after converting to Islam early in his career.",
     "Wears number 33." ] },
   { name:"Wilt Chamberlain", hints:[
     "Grew up in Philadelphia, Pennsylvania.",
-    "Played briefly for the Harlem Globetrotters before joining the league.",
-    "Joined the league as a territorial pick in 1959.",
-    "Once scored 100 points in a single game.",
+    "Attended the University of Kansas.",
+    "Territorial pick, 1959 NBA Draft.",
+    "Center.",
     "Played for three different NBA franchises.",
     "Won championships with two different franchises.",
     "Nicknamed 'Wilt the Stilt' and 'The Big Dipper'.",
     "Wears number 13." ] },
   { name:"Bill Russell", hints:[
     "Grew up in Oakland, California.",
-    "Won two straight college championships and an Olympic gold medal before turning pro.",
-    "Drafted 2nd overall in 1956, then acquired via trade on draft night.",
-    "Redefined defense and shot-blocking at the center position.",
+    "Attended the University of San Francisco.",
+    "Pick #2, 1956 NBA Draft.",
+    "Center.",
     "Played his entire career for one Boston franchise.",
     "Won 11 championships in 13 seasons, a record unlikely ever to be matched.",
     "Has no widely used nickname beyond his own name.",
     "Wears number 6." ] },
   { name:"Kevin Garnett", hints:[
     "Grew up in Mauldin, South Carolina.",
-    "Skipped college and went straight from high school to the draft.",
-    "Drafted 5th overall in 1995.",
-    "Known for intense, vocal energy and versatile defense at power forward.",
+    "Didn't attend college.",
+    "Pick #5, 1995 NBA Draft.",
+    "Power Forward.",
     "Played for three different NBA franchises.",
     "Won his only championship after a trade to a Boston 'Big Three'.",
     "Nicknamed 'The Big Ticket'.",
     "Wears number 21 and number 2." ] },
   { name:"Dwyane Wade", hints:[
     "Grew up in Chicago, Illinois.",
-    "Led his college team to a Final Four before turning pro.",
-    "Drafted 5th overall in 2003, part of a stacked draft class.",
-    "Known for explosive drives to the rim and clutch scoring.",
+    "Attended Marquette University.",
+    "Pick #5, 2003 NBA Draft.",
+    "Shooting Guard.",
     "Played most of his career for one Florida franchise.",
     "Won Finals MVP the year his team upset a heavily favored opponent.",
     "Nicknamed 'Flash'.",
     "Wears number 3." ] },
   { name:"Vince Carter", hints:[
-    "Grew up in Daytona Beach, Florida.",
-    "Played college basketball at North Carolina before turning pro.",
-    "Drafted 5th overall, then traded on draft night for a college teammate.",
-    "Known for one of the most explosive dunking abilities the league has seen.",
+    "Grew up in Florida.",
+    "Attended the University of North Carolina.",
+    "Pick #5, 1998 NBA Draft.",
+    "Shooting Guard.",
     "Played for eight different NBA franchises across 22 seasons.",
     "Won a memorable Slam Dunk Contest as a rookie.",
     "Nicknamed 'Vinsanity' and 'Half-Man, Half-Amazing'.",
     "Wears number 15." ] },
   { name:"Chris Paul", hints:[
-    "Grew up in Winston-Salem, North Carolina.",
-    "Played two college seasons before turning pro.",
-    "Drafted 4th overall in 2005.",
-    "Known for elite court vision and mid-range scoring as a floor general.",
+    "Grew up in North Carolina.",
+    "Attended Wake Forest University.",
+    "Pick #4, 2005 NBA Draft.",
+    "Point Guard.",
     "Has played for several different NBA franchises over a long career.",
     "Led the league in assists and steals multiple times each.",
     "Nicknamed 'CP3'.",
     "Wears number 3." ] },
   { name:"James Harden", hints:[
     "Grew up in Los Angeles, California.",
-    "Played college ball in Arizona before turning pro.",
-    "Drafted 3rd overall in 2009.",
-    "Known for a signature step-back three and drawing fouls.",
+    "Attended Arizona State University.",
+    "Pick #3, 2009 NBA Draft.",
+    "Shooting Guard.",
     "Has played for five different NBA franchises.",
     "Won MVP after leading the league in scoring.",
     "Nicknamed 'The Beard'.",
     "Wears number 13." ] },
   { name:"Damian Lillard", hints:[
     "Grew up in Oakland, California.",
-    "Played college ball at a small mid-major program.",
-    "Drafted 6th overall in 2012.",
-    "Known for hitting deep, buzzer-beating logo three-pointers.",
+    "Attended Weber State University.",
+    "Pick #6, 2012 NBA Draft.",
+    "Point Guard.",
     "Has played for two different NBA franchises.",
     "Won Rookie of the Year.",
     "Nicknamed 'Dame'.",
     "Wears number 0." ] },
   { name:"Jayson Tatum", hints:[
     "Grew up in St. Louis, Missouri.",
-    "Played one college season before turning pro.",
-    "Drafted 3rd overall in 2017.",
-    "Known for a smooth mid-range fadeaway shot.",
+    "Attended Duke University.",
+    "Pick #3, 2017 NBA Draft.",
+    "Small Forward.",
     "Has played his entire career for one Boston franchise.",
     "Won a championship leading a young core.",
     "Nicknamed 'JT'.",
     "Wears number 0." ] },
   { name:"Joel Embiid", hints:[
-    "Born and raised in Yaounde, Cameroon.",
-    "Didn't start playing basketball seriously until his mid-teens.",
-    "Drafted 3rd overall in 2014 despite missing his entire rookie season to injury.",
-    "Known for a versatile inside-out game blending post scoring and shooting.",
+    "Born and raised in Central Africa.",
+    "Attended the University of Kansas.",
+    "Pick #3, 2014 NBA Draft.",
+    "Center.",
     "Has played his entire career for one Pennsylvania franchise.",
     "Won MVP after leading the league in scoring.",
     "Nicknamed 'The Process'.",
     "Wears number 21." ] },
   { name:"Kawhi Leonard", hints:[
     "Grew up in Riverside, California.",
-    "Played two college seasons before turning pro.",
-    "Drafted 15th overall, then traded on draft night.",
-    "Known for enormous hands and lockdown perimeter defense.",
+    "Attended San Diego State University.",
+    "Pick #15, 2011 NBA Draft.",
+    "Small Forward.",
     "Has played for three different NBA franchises.",
     "Won Finals MVP with two different franchises.",
     "Nicknamed 'The Klaw'.",
@@ -424,6 +424,39 @@ const PLAYERS = [
 ];
 
 const SCORE_TABLE = {1:100,2:90,3:80,4:70,5:60,6:45,7:30,8:15};
+
+function normalizeGuess(s){
+  return s.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // strip accents
+    .replace(/[^a-z0-9 ]/g,'')                        // strip punctuation
+    .replace(/\s+/g,' ').trim();
+}
+
+// Build a lookup of accepted short answers (first name / last name) per player,
+// but only where that name part is unique across the whole roster.
+const ALIAS_INDEX = (function(){
+  const counts = {};
+  const entries = PLAYERS.map(p=>{
+    const full = normalizeGuess(p.name);
+    const parts = full.split(' ').filter(Boolean);
+    const partSet = new Set([parts[0], parts[parts.length-1]]);
+    partSet.forEach(t=>{ counts[t] = (counts[t]||0) + 1; });
+    return { name:p.name, full, parts: partSet };
+  });
+  const map = {};
+  entries.forEach(e=>{
+    const valid = new Set([e.full, e.full.replace(/ /g,'')]);
+    e.parts.forEach(t=>{ if(counts[t] === 1) valid.add(t); });
+    map[e.name] = valid;
+  });
+  return map;
+})();
+
+function isCorrectGuess(input, answerName){
+  const norm = normalizeGuess(input);
+  if(!norm) return false;
+  return ALIAS_INDEX[answerName].has(norm);
+}
 
 function dayIndexSeed(){
   const now = new Date();
@@ -501,6 +534,7 @@ function renderHints(){
 function showStatus(msg, kind){
   statusBox.textContent = msg;
   statusBox.className = 'status show ' + kind;
+  statusBox.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
 function endGame(won, doSync){
@@ -513,6 +547,7 @@ function endGame(won, doSync){
     won ? ("🏀 " + puzzle.name) : ("The answer was " + puzzle.name);
   resultCard.style.display = 'block';
   document.getElementById('adMid').style.display = 'flex';
+  if(doSync) resultCard.scrollIntoView({behavior:'smooth', block:'start'});
   renderMisses();
   const record = {hintsRevealed, missesUsed, won, score};
   localStorage.setItem(storageKey, JSON.stringify(record));
@@ -593,9 +628,9 @@ revealBtn.addEventListener('click', ()=>{
 
 function submitGuess(){
   if(finished) return;
-  const val = guessInput.value.trim().toLowerCase();
+  const val = guessInput.value.trim();
   if(!val) return;
-  if(val === puzzle.name.toLowerCase()){
+  if(isCorrectGuess(val, puzzle.name)){
     showStatus('Nailed it.', 'right');
     endGame(true);
     return;
