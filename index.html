@@ -147,7 +147,7 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
   width:100%;margin-top:16px;background:var(--ball);color:#231502;
 }
 .score-mini{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px;}
-.score-mini td{padding:3px 6px;border-bottom:1px solid var(--line);color:var(--net);}
+.score-mini td, .score-mini th{padding:3px 6px;border-bottom:1px solid var(--line);color:var(--net);font-weight:400;text-align:left;}
 
 .cookie-bar{
   display:none;position:fixed;left:0;right:0;bottom:0;z-index:40;
@@ -158,6 +158,15 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 .cookie-bar.show{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;}
 .cookie-bar a{color:var(--ball);}
 .cookie-bar button{background:var(--ball);color:#231502;padding:8px 16px;}
+
+.visually-hidden{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important;transition-duration:0.001ms !important;}
+}
 </style>
 </head>
 <body>
@@ -170,26 +179,27 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
   </header>
 
   <!-- AD SLOT: top banner. Replace inner content with your AdSense <ins> tag once approved. -->
-  <div class="ad-slot" id="adTop">Ad space</div>
+  <div class="ad-slot" id="adTop" role="complementary" aria-label="Advertisement">Ad space</div>
 
   <div class="card">
-    <div id="hintTrack" class="hint-track"></div>
+    <div id="hintTrack" class="hint-track" aria-hidden="true"></div>
     <div id="hintList" style="margin-top:14px;"></div>
 
     <div class="controls">
       <button class="btn-reveal" id="revealBtn">Reveal next hint</button>
     </div>
     <div class="guess-row">
+      <label for="guessInput" class="visually-hidden">Guess the player's name</label>
       <input type="text" id="guessInput" list="playerList" placeholder="Type a player name…" autocomplete="off">
       <button class="btn-guess" id="guessBtn">Guess</button>
     </div>
     <div class="guess-meta">
       <span id="missLabel">3 wrong guesses left</span>
-      <div class="miss-pips" id="missPips"></div>
+      <div class="miss-pips" id="missPips" aria-hidden="true"></div>
     </div>
     <datalist id="playerList"></datalist>
 
-    <div class="status" id="statusBox"></div>
+    <div class="status" id="statusBox" role="status" aria-live="polite"></div>
   </div>
 
   <div class="card scoreboard" id="resultCard" style="display:none;">
@@ -201,38 +211,39 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
   </div>
 
   <!-- AD SLOT: mid-page, only visible once a round ends so it never interrupts active play. -->
-  <div class="ad-slot" id="adMid" style="display:none;">Ad space</div>
+  <div class="ad-slot" id="adMid" style="display:none;" role="complementary" aria-label="Advertisement">Ad space</div>
 
   <div class="footer-note">One player, once a day. 8 hints, scored by how few you need.</div>
   <div class="footer-note" style="margin-top:6px;"><a href="#" id="resetLink" style="color:inherit;">Replay today's puzzle (testing only)</a></div>
 
   <!-- AD SLOT: footer banner. -->
-  <div class="ad-slot" id="adFooter">Ad space</div>
+  <div class="ad-slot" id="adFooter" role="complementary" aria-label="Advertisement">Ad space</div>
 </div>
 
-<div class="modal-backdrop" id="howToModal">
+<div class="modal-backdrop" id="howToModal" role="dialog" aria-modal="true" aria-labelledby="howToTitle">
   <div class="modal-box">
-    <h2>How to play</h2>
+    <h2 id="howToTitle">How to play</h2>
     <p>A new NBA player is chosen every day. You have <strong>8 hints</strong>, always in the same order: Origin, College Career, Draft, Position, Teams, Accolades, Nickname, Number.</p>
     <p>Guess any time — you don't have to reveal every hint. The fewer hints you use, the higher your score:</p>
     <table class="score-mini">
-      <tr><td>1 hint</td><td>100 pts</td></tr>
-      <tr><td>2 hints</td><td>90 pts</td></tr>
-      <tr><td>3 hints</td><td>80 pts</td></tr>
-      <tr><td>4 hints</td><td>70 pts</td></tr>
-      <tr><td>5 hints</td><td>60 pts</td></tr>
-      <tr><td>6 hints</td><td>45 pts</td></tr>
-      <tr><td>7 hints</td><td>30 pts</td></tr>
-      <tr><td>8 hints</td><td>15 pts</td></tr>
+      <caption class="visually-hidden">Score awarded by number of hints used</caption>
+      <tr><th scope="row">1 hint</th><td>100 pts</td></tr>
+      <tr><th scope="row">2 hints</th><td>90 pts</td></tr>
+      <tr><th scope="row">3 hints</th><td>80 pts</td></tr>
+      <tr><th scope="row">4 hints</th><td>70 pts</td></tr>
+      <tr><th scope="row">5 hints</th><td>60 pts</td></tr>
+      <tr><th scope="row">6 hints</th><td>45 pts</td></tr>
+      <tr><th scope="row">7 hints</th><td>30 pts</td></tr>
+      <tr><th scope="row">8 hints</th><td>15 pts</td></tr>
     </table>
     <p>You also get <strong>3 wrong guesses</strong> per puzzle — use them up and the round ends. Come back tomorrow for a new player.</p>
-    <button class="modal-close" id="howToClose">Got it</button>
+    <button class="modal-close" id="howToClose" aria-label="Close how-to-play guide">Got it</button>
   </div>
 </div>
 
 <div class="cookie-bar" id="cookieBar">
   <span>This site uses cookies for ads and basic analytics. <a href="/privacy-policy.html">Privacy policy</a></span>
-  <button id="cookieOk">Got it</button>
+  <button id="cookieOk" aria-label="Accept cookie notice">Got it</button>
 </div>
 
 <script defer src="/_vercel/insights/script.js"></script>
@@ -914,11 +925,30 @@ function submitGuess(){
 guessBtn.addEventListener('click', submitGuess);
 guessInput.addEventListener('keydown', e=>{ if(e.key==='Enter') submitGuess(); });
 
-// How to play modal
+// How to play modal — with focus management for keyboard/screen-reader users
 const howToModal = document.getElementById('howToModal');
-document.getElementById('howToBtn').addEventListener('click', ()=> howToModal.classList.add('show'));
-document.getElementById('howToClose').addEventListener('click', ()=> howToModal.classList.remove('show'));
-howToModal.addEventListener('click', e=>{ if(e.target === howToModal) howToModal.classList.remove('show'); });
+const howToBtn = document.getElementById('howToBtn');
+const howToCloseBtn = document.getElementById('howToClose');
+let lastFocusBeforeModal = null;
+
+function openHowTo(){
+  lastFocusBeforeModal = document.activeElement;
+  howToModal.classList.add('show');
+  howToCloseBtn.focus();
+  document.addEventListener('keydown', modalKeyHandler);
+}
+function closeHowTo(){
+  howToModal.classList.remove('show');
+  document.removeEventListener('keydown', modalKeyHandler);
+  if(lastFocusBeforeModal) lastFocusBeforeModal.focus();
+}
+function modalKeyHandler(e){
+  if(e.key === 'Escape'){ closeHowTo(); }
+  else if(e.key === 'Tab'){ e.preventDefault(); howToCloseBtn.focus(); } // only one focusable item inside
+}
+howToBtn.addEventListener('click', openHowTo);
+howToCloseBtn.addEventListener('click', closeHowTo);
+howToModal.addEventListener('click', e=>{ if(e.target === howToModal) closeHowTo(); });
 
 // Cookie consent banner
 try{
