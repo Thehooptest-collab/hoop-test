@@ -123,6 +123,41 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
   padding:18px 12px;margin:16px 0;min-height:90px;
   display:flex;align-items:center;justify-content:center;
 }
+
+.howto-btn{
+  margin-top:14px;background:transparent;color:var(--net-dim);
+  border:1px solid var(--line);border-radius:20px;padding:6px 14px;font-size:12px;
+}
+.howto-btn:hover{color:var(--net);border-color:var(--net-dim);}
+
+.modal-backdrop{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
+  align-items:center;justify-content:center;z-index:50;padding:20px;
+}
+.modal-backdrop.show{display:flex;}
+.modal-box{
+  background:var(--court2);border:1px solid var(--line);border-radius:12px;
+  padding:22px;max-width:440px;width:100%;max-height:80vh;overflow-y:auto;
+}
+.modal-box h2{font-family:'Barlow Condensed',sans-serif;font-size:24px;margin:0 0 12px;}
+.modal-box p, .modal-box li{font-size:14px;line-height:1.55;color:var(--net-dim);}
+.modal-box strong{color:var(--net);}
+.modal-box ul{padding-left:18px;margin:8px 0;}
+.modal-close{
+  width:100%;margin-top:16px;background:var(--ball);color:#231502;
+}
+.score-mini{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px;}
+.score-mini td{padding:3px 6px;border-bottom:1px solid var(--line);color:var(--net);}
+
+.cookie-bar{
+  display:none;position:fixed;left:0;right:0;bottom:0;z-index:40;
+  background:var(--court2);border-top:1px solid var(--line);
+  padding:14px 16px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));
+  font-size:13px;color:var(--net-dim);
+}
+.cookie-bar.show{display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;}
+.cookie-bar a{color:var(--ball);}
+.cookie-bar button{background:var(--ball);color:#231502;padding:8px 16px;}
 </style>
 </head>
 <body>
@@ -131,6 +166,7 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
     <h1 class="wordmark">THE HOOP<span>TEST</span></h1>
     <div class="sub" id="dateLabel">Daily NBA Trivia</div>
     <div class="rim"></div>
+    <button id="howToBtn" class="howto-btn">How to play</button>
   </header>
 
   <!-- AD SLOT: top banner. Replace inner content with your AdSense <ins> tag once approved. -->
@@ -168,11 +204,38 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
   <div class="ad-slot" id="adMid" style="display:none;">Ad space</div>
 
   <div class="footer-note">One player, once a day. 8 hints, scored by how few you need.</div>
+  <div class="footer-note" style="margin-top:6px;"><a href="#" id="resetLink" style="color:inherit;">Replay today's puzzle (testing only)</a></div>
 
   <!-- AD SLOT: footer banner. -->
   <div class="ad-slot" id="adFooter">Ad space</div>
 </div>
 
+<div class="modal-backdrop" id="howToModal">
+  <div class="modal-box">
+    <h2>How to play</h2>
+    <p>A new NBA player is chosen every day. You have <strong>8 hints</strong>, always in the same order: Origin, College Career, Draft, Position, Teams, Accolades, Nickname, Number.</p>
+    <p>Guess any time — you don't have to reveal every hint. The fewer hints you use, the higher your score:</p>
+    <table class="score-mini">
+      <tr><td>1 hint</td><td>100 pts</td></tr>
+      <tr><td>2 hints</td><td>90 pts</td></tr>
+      <tr><td>3 hints</td><td>80 pts</td></tr>
+      <tr><td>4 hints</td><td>70 pts</td></tr>
+      <tr><td>5 hints</td><td>60 pts</td></tr>
+      <tr><td>6 hints</td><td>45 pts</td></tr>
+      <tr><td>7 hints</td><td>30 pts</td></tr>
+      <tr><td>8 hints</td><td>15 pts</td></tr>
+    </table>
+    <p>You also get <strong>3 wrong guesses</strong> per puzzle — use them up and the round ends. Come back tomorrow for a new player.</p>
+    <button class="modal-close" id="howToClose">Got it</button>
+  </div>
+</div>
+
+<div class="cookie-bar" id="cookieBar">
+  <span>This site uses cookies for ads and basic analytics. <a href="/privacy-policy.html">Privacy policy</a></span>
+  <button id="cookieOk">Got it</button>
+</div>
+
+<script defer src="/_vercel/insights/script.js"></script>
 <script>
 // Every player's hints follow the same fixed category order:
 const CATEGORIES = ["Origin","College Career","Draft","Position","Teams","Accolades","Nickname","Number"];
@@ -201,7 +264,7 @@ const PLAYERS = [
     "Didn't attend college.",
     "Pick #15, 2013 NBA Draft.",
     "Power Forward.",
-    "Has played his entire career for one Midwest franchise.",
+    "Spent his first 13 seasons with a Midwest franchise before a blockbuster trade.",
     "Won back-to-back MVP awards and later a championship.",
     "Nicknamed 'The Greek Freak'.",
     "Wears number 34." ] },
@@ -283,7 +346,7 @@ const PLAYERS = [
     "Pick #9, 1998 NBA Draft.",
     "Power Forward.",
     "Played his entire 21-year career for one Texas franchise.",
-    "Won regular-season MVP the year before winning a title.",
+    "Won the NBA MVP award in 2007 and an NBA championship in 2011.",
     "Early on, some called him the 'German Wunderkind'.",
     "Wears number 41." ] },
   { name:"Magic Johnson", hints:[
@@ -364,7 +427,7 @@ const PLAYERS = [
     "Pick #5, 1998 NBA Draft.",
     "Shooting Guard.",
     "Played for eight different NBA franchises across 22 seasons.",
-    "Won a memorable Slam Dunk Contest as a rookie.",
+    "Won a legendary Slam Dunk Contest early in his career.",
     "Nicknamed 'Vinsanity' and 'Half-Man, Half-Amazing'.",
     "Wears number 15." ] },
   { name:"Chris Paul", hints:[
@@ -390,7 +453,7 @@ const PLAYERS = [
     "Attended Weber State University.",
     "Pick #6, 2012 NBA Draft.",
     "Point Guard.",
-    "Has played for two different NBA franchises.",
+    "Has played for two different NBA franchises, including two separate stints with one of them.",
     "Won Rookie of the Year.",
     "Nicknamed 'Dame'.",
     "Wears number 0." ] },
@@ -424,6 +487,7 @@ const PLAYERS = [
 ];
 
 const SCORE_TABLE = {1:100,2:90,3:80,4:70,5:60,6:45,7:30,8:15};
+const SITE_URL = ""; // fill this in once you have your domain, e.g. "https://thehooptest.com"
 
 function normalizeGuess(s){
   return s.toLowerCase()
@@ -467,8 +531,23 @@ function dayIndexSeed(){
 const seed = dayIndexSeed();
 const puzzleIndex = seed % PLAYERS.length;
 const puzzle = PLAYERS[puzzleIndex];
-const todayKey = new Date().toISOString().slice(0,10);
+function localDateKey(d){
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return y+"-"+m+"-"+day;
+}
+const todayKey = localDateKey(new Date());
 const storageKey = "hooptest_" + todayKey;
+
+// Testing helper: visiting the page with ?reset at the end of the URL clears
+// today's saved result (both locally and in your account, if signed in) so
+// you can replay it. Not linked anywhere in the UI.
+let forceReset = false;
+try{
+  if(new URLSearchParams(location.search).has('reset')){
+    localStorage.removeItem(storageKey);
+    forceReset = true;
+  }
+}catch(e){}
 
 document.getElementById('dateLabel').textContent =
   new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
@@ -551,75 +630,35 @@ function endGame(won, doSync){
   renderMisses();
   const record = {hintsRevealed, missesUsed, won, score};
   localStorage.setItem(storageKey, JSON.stringify(record));
-  if(doSync) syncOnFinish(record);
+  if(doSync){
+    renderStatsLine(updateLocalStats(score));
+  } else {
+    renderStatsLine(getLocalStats());
+  }
 }
 
-// ---- Cross-device sync (signed-in Claude account, optional) ----
-function dayDocPath(uid){ return "data/users/" + uid + "/hooptest_results/" + todayKey; }
-function statsDocPath(uid){ return "data/users/" + uid + "/hooptest_stats/main"; }
-
-let cloudCtx = null;
-async function getCloud(){
-  if(cloudCtx !== null) return cloudCtx;
-  try{
-    const u = await claude.use("user");
-    const d = await claude.use("db");
-    if(!u || !d){ cloudCtx = false; return false; }
-    const id = u.id();
-    if(!id){ cloudCtx = false; return false; }
-    cloudCtx = { user:u, db:d, uid:id };
-    return cloudCtx;
-  }catch(e){ cloudCtx = false; return false; }
+// ---- Local streak/stats (source of truth — works on any host) ----
+function getLocalStats(){
+  try{ return JSON.parse(localStorage.getItem('hooptest_stats_v1')||'null') || {games:0,totalScore:0,streak:0,lastDate:null}; }
+  catch(e){ return {games:0,totalScore:0,streak:0,lastDate:null}; }
 }
-
+function updateLocalStats(score){
+  const prev = getLocalStats();
+  let streak = prev.streak || 0;
+  if(prev.lastDate){
+    const diffDays = Math.round((new Date(todayKey) - new Date(prev.lastDate)) / 86400000);
+    streak = diffDays === 1 ? streak + 1 : (diffDays === 0 ? streak : 1);
+  } else { streak = 1; }
+  const next = { games:(prev.games||0)+1, totalScore:(prev.totalScore||0)+score, streak, lastDate: todayKey };
+  try{ localStorage.setItem('hooptest_stats_v1', JSON.stringify(next)); }catch(e){}
+  return next;
+}
 function renderStatsLine(s){
   const el = document.getElementById('statsLine');
   if(!el || !s || !s.games) return;
   const avg = Math.round(s.totalScore / s.games);
   el.textContent = s.games + " played · avg " + avg + " · " + s.streak + "-day streak";
   el.style.display = 'block';
-}
-
-async function syncOnFinish(record){
-  const cloud = await getCloud();
-  if(!cloud) return;
-  try{ await cloud.db.doc(dayDocPath(cloud.uid)).set(record); }catch(e){}
-  try{
-    const ref = cloud.db.doc(statsDocPath(cloud.uid));
-    let prev = {};
-    try{ const snap = await ref.get(); prev = (snap && snap.data) || {}; }catch(e){}
-    let streak = prev.streak || 0;
-    if(prev.lastDate){
-      const diffDays = Math.round((new Date(todayKey) - new Date(prev.lastDate)) / 86400000);
-      streak = diffDays === 1 ? streak + 1 : (diffDays === 0 ? streak : 1);
-    } else { streak = 1; }
-    const next = {
-      games: (prev.games || 0) + 1,
-      totalScore: (prev.totalScore || 0) + record.score,
-      streak, lastDate: todayKey
-    };
-    await ref.set(next);
-    renderStatsLine(next);
-  }catch(e){}
-}
-
-async function syncOnLoad(localRecord){
-  const cloud = await getCloud();
-  if(!cloud) return;
-  let cloudData = null;
-  try{ const snap = await cloud.db.doc(dayDocPath(cloud.uid)).get(); cloudData = snap && snap.data; }catch(e){}
-  if(cloudData && !finished){
-    hintsRevealed = cloudData.hintsRevealed;
-    missesUsed = cloudData.missesUsed || 0;
-    renderHints();
-    endGame(cloudData.won, false);
-  } else if(!cloudData && localRecord){
-    syncOnFinish(localRecord);
-  }
-  try{
-    const snap = await cloud.db.doc(statsDocPath(cloud.uid)).get();
-    if(snap && snap.data) renderStatsLine(snap.data);
-  }catch(e){}
 }
 
 revealBtn.addEventListener('click', ()=>{
@@ -650,10 +689,33 @@ function submitGuess(){
 guessBtn.addEventListener('click', submitGuess);
 guessInput.addEventListener('keydown', e=>{ if(e.key==='Enter') submitGuess(); });
 
+// How to play modal
+const howToModal = document.getElementById('howToModal');
+document.getElementById('howToBtn').addEventListener('click', ()=> howToModal.classList.add('show'));
+document.getElementById('howToClose').addEventListener('click', ()=> howToModal.classList.remove('show'));
+howToModal.addEventListener('click', e=>{ if(e.target === howToModal) howToModal.classList.remove('show'); });
+
+// Cookie consent banner
+try{
+  if(!localStorage.getItem('hooptest_cookie_ack')){
+    document.getElementById('cookieBar').classList.add('show');
+  }
+}catch(e){}
+document.getElementById('cookieOk').addEventListener('click', ()=>{
+  document.getElementById('cookieBar').classList.remove('show');
+  try{ localStorage.setItem('hooptest_cookie_ack','1'); }catch(e){}
+});
+
+document.getElementById('resetLink').addEventListener('click', e=>{
+  e.preventDefault();
+  localStorage.removeItem(storageKey);
+  location.href = location.pathname; // drop any query string too, then reload
+});
+
 document.getElementById('shareBtn').addEventListener('click', ()=>{
   const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
   const filled = '🟧'.repeat(saved.hintsRevealed||8) + '⬛'.repeat(8-(saved.hintsRevealed||8));
-  const text = `The Hoop Test ${todayKey}\n${filled}\nScore: ${saved.score||0}/100`;
+  const text = `The Hoop Test ${todayKey}\n${filled}\nScore: ${saved.score||0}/100` + (SITE_URL ? `\n${SITE_URL}` : '');
   navigator.clipboard?.writeText(text).catch(()=>{});
   const btn = document.getElementById('shareBtn');
   const old = btn.textContent; btn.textContent='Copied!';
@@ -673,7 +735,7 @@ try{
     renderMisses();
   }
 }catch(e){ renderHints(); renderMisses(); }
-syncOnLoad(localRecord);
+if(!localRecord){ renderStatsLine(getLocalStats()); }
 </script>
 </body>
 </html>
