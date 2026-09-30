@@ -3,7 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>The Hoop Test</title>
+<title>The Hoop Test — Daily NBA Guessing Game</title>
+<meta name="description" content="A free daily NBA guessing game. One mystery player, 8 hints, score by how few you need. A new player every day.">
+<!-- IMPORTANT: replace YOUR-DOMAIN-HERE with your real domain in the 4 lines below once you have one — social platforms require an absolute URL to fetch the preview image, a relative path won't work. -->
+<link rel="canonical" href="https://YOUR-DOMAIN-HERE/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="The Hoop Test">
+<meta property="og:title" content="The Hoop Test — Daily NBA Guessing Game">
+<meta property="og:description" content="One mystery NBA player, 8 hints, score by how few you need. A new player every day.">
+<meta property="og:image" content="https://YOUR-DOMAIN-HERE/og-image.png">
+<meta property="og:url" content="https://YOUR-DOMAIN-HERE/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Hoop Test — Daily NBA Guessing Game">
+<meta name="twitter:description" content="One mystery NBA player, 8 hints, score by how few you need. A new player every day.">
+<meta name="twitter:image" content="https://YOUR-DOMAIN-HERE/og-image.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0B0E14">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,10 +48,10 @@ html,body{height:100%;}
 body{
   margin:0;background:var(--court);color:var(--net);
   font-family:'Manrope',sans-serif;
-  display:flex;justify-content:center;
+  display:flex;flex-direction:column;
   min-height:100%;
 }
-.wrap{width:100%;max-width:520px;padding:28px 20px 40px;}
+.wrap{width:100%;max-width:520px;padding:28px 20px 40px;margin:0 auto;}
 header{text-align:center;margin-bottom:22px;}
 .wordmark{
   font-family:'Barlow Condensed',sans-serif;font-weight:700;
@@ -125,7 +144,7 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 }
 
 .howto-btn{
-  margin-top:14px;background:transparent;color:var(--net-dim);
+  margin-top:14px;margin-left:4px;margin-right:4px;background:transparent;color:var(--net-dim);
   border:1px solid var(--line);border-radius:20px;padding:6px 14px;font-size:12px;
 }
 .howto-btn:hover{color:var(--net);border-color:var(--net-dim);}
@@ -140,9 +159,13 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
   padding:22px;max-width:440px;width:100%;max-height:80vh;overflow-y:auto;
 }
 .modal-box h2{font-family:'Barlow Condensed',sans-serif;font-size:24px;margin:0 0 12px;}
+.modal-box h3{color:var(--net);font-size:16px;margin:20px 0 8px;}
+.modal-box h4{color:var(--net);font-size:14px;margin:14px 0 4px;}
 .modal-box p, .modal-box li{font-size:14px;line-height:1.55;color:var(--net-dim);}
 .modal-box strong{color:var(--net);}
 .modal-box ul{padding-left:18px;margin:8px 0;}
+.modal-box .about-links{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);}
+.modal-box .about-links a{color:var(--ball);}
 .modal-close{
   width:100%;margin-top:16px;background:var(--ball);color:#231502;
 }
@@ -176,6 +199,7 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
     <div class="sub" id="dateLabel">Daily NBA Trivia</div>
     <div class="rim"></div>
     <button id="howToBtn" class="howto-btn">How to play</button>
+    <button id="aboutBtn" class="howto-btn">About</button>
   </header>
 
   <!-- AD SLOT: top banner. Replace inner content with your AdSense <ins> tag once approved. -->
@@ -218,6 +242,34 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 
   <!-- AD SLOT: footer banner. -->
   <div class="ad-slot" id="adFooter" role="complementary" aria-label="Advertisement">Ad space</div>
+</div>
+
+<div class="modal-backdrop" id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+  <div class="modal-box">
+    <h2 id="aboutTitle">About The Hoop Test</h2>
+    <p>The Hoop Test is a free daily NBA guessing game. Every day, one mystery player is chosen, and you get up to 8 hints — Origin, College Career, Draft, Position, Teams, Accolades, Nickname, and Number — always revealed in that same order. You don't have to use them all: the fewer hints you need, the higher your score, from 100 points on a single hint down to 15 points if you need all eight. You also get three wrong guesses per round, so guess carefully.</p>
+    <p>A new player is chosen automatically each day, spanning decades of NBA history — from 1950s and '60s legends like Bill Russell and Wilt Chamberlain, through the Showtime Lakers and Bad Boys Pistons eras, all the way to today's stars like Anthony Edwards and Shai Gilgeous-Alexander.</p>
+
+    <h3>Frequently asked questions</h3>
+
+    <h4>Is a new player added every day?</h4>
+    <p>Yes — the puzzle changes automatically each day, and it's the same player for everyone playing that day.</p>
+
+    <h4>Do I have to reveal all 8 hints?</h4>
+    <p>No. You can guess at any point. Using fewer hints earns a higher score, so it pays to guess early if you're confident.</p>
+
+    <h4>What happens if I run out of guesses?</h4>
+    <p>You get three wrong guesses per puzzle. Use them all up and the round ends — the answer is revealed, and you can come back the next day for a new player.</p>
+
+    <h4>Does my score or streak save if I come back later?</h4>
+    <p>Yes — your daily result and streak are saved right in your browser, so revisiting the site later will show your progress where you left it.</p>
+
+    <h4>Who is this game for?</h4>
+    <p>Anyone who likes basketball trivia, from casual fans to hardcore NBA historians. The difficulty scales naturally, since the first hint is always the vaguest and later ones get progressively more specific.</p>
+
+    <p class="about-links"><a href="/privacy-policy.html">Privacy policy</a></p>
+    <button class="modal-close" id="aboutClose" aria-label="Close about section">Got it</button>
+  </div>
 </div>
 
 <div class="modal-backdrop" id="howToModal" role="dialog" aria-modal="true" aria-labelledby="howToTitle">
@@ -925,30 +977,41 @@ function submitGuess(){
 guessBtn.addEventListener('click', submitGuess);
 guessInput.addEventListener('keydown', e=>{ if(e.key==='Enter') submitGuess(); });
 
-// How to play modal — with focus management for keyboard/screen-reader users
-const howToModal = document.getElementById('howToModal');
-const howToBtn = document.getElementById('howToBtn');
-const howToCloseBtn = document.getElementById('howToClose');
-let lastFocusBeforeModal = null;
+// Generic accessible modal helper: focus moves in on open, Tab is trapped
+// among the modal's own focusable elements, Escape closes, focus returns to
+// whatever triggered it on close. Reused for both How to Play and About.
+function setupModal(modalEl, triggerBtn, closeBtn){
+  let lastFocus = null;
+  function focusableEls(){
+    return Array.from(modalEl.querySelectorAll('button, a[href], input, [tabindex]:not([tabindex="-1"])'));
+  }
+  function open(){
+    lastFocus = document.activeElement;
+    modalEl.classList.add('show');
+    closeBtn.focus();
+    document.addEventListener('keydown', keyHandler);
+  }
+  function close(){
+    modalEl.classList.remove('show');
+    document.removeEventListener('keydown', keyHandler);
+    if(lastFocus) lastFocus.focus();
+  }
+  function keyHandler(e){
+    if(e.key === 'Escape'){ close(); return; }
+    if(e.key !== 'Tab') return;
+    const els = focusableEls();
+    if(!els.length) return;
+    const first = els[0], last = els[els.length - 1];
+    if(e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  }
+  triggerBtn.addEventListener('click', open);
+  closeBtn.addEventListener('click', close);
+  modalEl.addEventListener('click', e=>{ if(e.target === modalEl) close(); });
+}
 
-function openHowTo(){
-  lastFocusBeforeModal = document.activeElement;
-  howToModal.classList.add('show');
-  howToCloseBtn.focus();
-  document.addEventListener('keydown', modalKeyHandler);
-}
-function closeHowTo(){
-  howToModal.classList.remove('show');
-  document.removeEventListener('keydown', modalKeyHandler);
-  if(lastFocusBeforeModal) lastFocusBeforeModal.focus();
-}
-function modalKeyHandler(e){
-  if(e.key === 'Escape'){ closeHowTo(); }
-  else if(e.key === 'Tab'){ e.preventDefault(); howToCloseBtn.focus(); } // only one focusable item inside
-}
-howToBtn.addEventListener('click', openHowTo);
-howToCloseBtn.addEventListener('click', closeHowTo);
-howToModal.addEventListener('click', e=>{ if(e.target === howToModal) closeHowTo(); });
+setupModal(document.getElementById('howToModal'), document.getElementById('howToBtn'), document.getElementById('howToClose'));
+setupModal(document.getElementById('aboutModal'), document.getElementById('aboutBtn'), document.getElementById('aboutClose'));
 
 // Cookie consent banner
 try{
