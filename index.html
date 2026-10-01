@@ -238,7 +238,6 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
   <div class="ad-slot" id="adMid" style="display:none;" role="complementary" aria-label="Advertisement">Ad space</div>
 
   <div class="footer-note">One player, once a day. 8 hints, scored by how few you need.</div>
-  <div class="footer-note" style="margin-top:6px;"><a href="#" id="resetLink" style="color:inherit;">Replay today's puzzle (testing only)</a></div>
 
   <!-- AD SLOT: footer banner. -->
   <div class="ad-slot" id="adFooter" role="complementary" aria-label="Advertisement">Ad space</div>
@@ -247,7 +246,7 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 <div class="modal-backdrop" id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
   <div class="modal-box">
     <h2 id="aboutTitle">About The Hoop Test</h2>
-    <p>The Hoop Test is a free daily NBA guessing game. Every day, one mystery player is chosen, and you get up to 8 hints — Origin, College Career, Draft, Position, Teams, Accolades, Nickname, and Number — always revealed in that same order. You don't have to use them all: the fewer hints you need, the higher your score, from 100 points on a single hint down to 15 points if you need all eight. You also get three wrong guesses per round, so guess carefully.</p>
+    <p>The Hoop Test is a free daily NBA guessing game. Every day, one mystery player is chosen, and you get up to 8 hints — Hometown, College Career, Draft, Position, Teams, Accolades, Nickname, and Number — always revealed in that same order. You don't have to use them all: the fewer hints you need, the higher your score, from 100 points on a single hint down to 15 points if you need all eight. You also get three wrong guesses per round, so guess carefully.</p>
     <p>A new player is chosen automatically each day, spanning decades of NBA history — from 1950s and '60s legends like Bill Russell and Wilt Chamberlain, through the Showtime Lakers and Bad Boys Pistons eras, all the way to today's stars like Anthony Edwards and Shai Gilgeous-Alexander.</p>
 
     <h3>Frequently asked questions</h3>
@@ -275,7 +274,7 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 <div class="modal-backdrop" id="howToModal" role="dialog" aria-modal="true" aria-labelledby="howToTitle">
   <div class="modal-box">
     <h2 id="howToTitle">How to play</h2>
-    <p>A new NBA player is chosen every day. You have <strong>8 hints</strong>, always in the same order: Origin, College Career, Draft, Position, Teams, Accolades, Nickname, Number.</p>
+    <p>A new NBA player is chosen every day. You have <strong>8 hints</strong>, always in the same order: Hometown, College Career, Draft, Position, Teams, Accolades, Nickname, Number.</p>
     <p>Guess any time — you don't have to reveal every hint. The fewer hints you use, the higher your score:</p>
     <table class="score-mini">
       <caption class="visually-hidden">Score awarded by number of hints used</caption>
@@ -301,11 +300,11 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 <script defer src="/_vercel/insights/script.js"></script>
 <script>
 // Every player's hints follow the same fixed category order:
-const CATEGORIES = ["Origin","College Career","Draft","Position","Teams","Accolades","Nickname","Number"];
+const CATEGORIES = ["Hometown","College Career","Draft","Position","Teams","Accolades","Nickname","Number"];
 
 const PLAYERS = [
   { name:"LeBron James", hints:[
-    "Grew up in Ohio.",
+    "Ohio.",
     "Didn't attend college.",
     "Pick #1, 2003 NBA Draft.",
     "Small Forward.",
@@ -314,7 +313,7 @@ const PLAYERS = [
     "Nicknamed 'King James'.",
     "Has worn number 23 and number 6." ] },
   { name:"Stephen Curry", hints:[
-    "Son of a former NBA sharpshooter, grew up around the league.",
+    "North Carolina.",
     "Attended Davidson College.",
     "Pick #7, 2009 NBA Draft.",
     "Point Guard.",
@@ -323,7 +322,7 @@ const PLAYERS = [
     "Known simply as 'Chef' for how he 'cooks' defenders.",
     "Wears number 30." ] },
   { name:"Giannis Antetokounmpo", hints:[
-    "Born in Europe to immigrant parents from West Africa.",
+    "Greece.",
     "Didn't attend college.",
     "Pick #15, 2013 NBA Draft.",
     "Power Forward.",
@@ -332,7 +331,7 @@ const PLAYERS = [
     "Nicknamed 'The Greek Freak'.",
     "Wears number 34." ] },
   { name:"Kevin Durant", hints:[
-    "Grew up in the DC/Maryland area.",
+    "Maryland.",
     "Attended the University of Texas.",
     "Pick #2, 2007 NBA Draft.",
     "Small Forward.",
@@ -341,7 +340,7 @@ const PLAYERS = [
     "Known simply by the initials 'KD'.",
     "Has worn number 35 and number 7." ] },
   { name:"Nikola Jokic", hints:[
-    "From a small city in Serbia.",
+    "Serbia.",
     "Didn't attend college.",
     "Pick #41, 2014 NBA Draft.",
     "Center.",
@@ -350,7 +349,7 @@ const PLAYERS = [
     "Nicknamed 'The Joker'.",
     "Wears number 15." ] },
   { name:"Kobe Bryant", hints:[
-    "Spent part of his childhood living abroad, where his father played professionally.",
+    "Pennsylvania.",
     "Didn't attend college.",
     "Pick #13, 1996 NBA Draft.",
     "Shooting Guard.",
@@ -359,7 +358,7 @@ const PLAYERS = [
     "Nicknamed 'Black Mamba'.",
     "Wore number 8, then switched to number 24." ] },
   { name:"Michael Jordan", hints:[
-    "Grew up in Wilmington, North Carolina.",
+    "North Carolina.",
     "Attended the University of North Carolina.",
     "Pick #3, 1984 NBA Draft.",
     "Shooting Guard.",
@@ -368,7 +367,7 @@ const PLAYERS = [
     "Nicknamed 'Air' and 'His Airness'.",
     "Wore number 23 for nearly his entire career." ] },
   { name:"Luka Doncic", hints:[
-    "From a small country in Central Europe.",
+    "Slovenia.",
     "Didn't attend college.",
     "Pick #3, 2018 NBA Draft.",
     "Point Guard.",
@@ -377,7 +376,7 @@ const PLAYERS = [
     "Sometimes called 'Luka Magic'.",
     "Wears number 77." ] },
   { name:"Tim Duncan", hints:[
-    "Grew up on a Caribbean island.",
+    "U.S. Virgin Islands.",
     "Attended Wake Forest University.",
     "Pick #1, 1997 NBA Draft.",
     "Power Forward.",
@@ -386,7 +385,7 @@ const PLAYERS = [
     "Nicknamed 'The Big Fundamental'.",
     "Wears number 21." ] },
   { name:"Shaquille O'Neal", hints:[
-    "Moved often as a kid because his stepfather was in the Army.",
+    "New Jersey.",
     "Attended Louisiana State University.",
     "Pick #1, 1992 NBA Draft.",
     "Center.",
@@ -395,7 +394,7 @@ const PLAYERS = [
     "Has gone by dozens of nicknames, including 'The Big Aristotle'.",
     "Wore number 34 and number 32." ] },
   { name:"Allen Iverson", hints:[
-    "Grew up in Hampton, Virginia, in poverty.",
+    "Virginia.",
     "Attended Georgetown University.",
     "Pick #1, 1996 NBA Draft.",
     "Point Guard.",
@@ -404,7 +403,7 @@ const PLAYERS = [
     "Nicknamed 'The Answer'.",
     "Wears number 3." ] },
   { name:"Dirk Nowitzki", hints:[
-    "From Germany.",
+    "Germany.",
     "Didn't attend college.",
     "Pick #9, 1998 NBA Draft.",
     "Power Forward.",
@@ -413,7 +412,7 @@ const PLAYERS = [
     "Early on, some called him the 'German Wunderkind'.",
     "Wears number 41." ] },
   { name:"Magic Johnson", hints:[
-    "Grew up in Lansing, Michigan.",
+    "Michigan.",
     "Attended Michigan State University.",
     "Pick #1, 1979 NBA Draft.",
     "Point Guard.",
@@ -422,7 +421,7 @@ const PLAYERS = [
     "Nicknamed 'Magic'.",
     "Wears number 32." ] },
   { name:"Larry Bird", hints:[
-    "Grew up in a small town in Indiana.",
+    "Indiana.",
     "Attended Indiana State University.",
     "Pick #6, 1978 NBA Draft.",
     "Small Forward.",
@@ -431,7 +430,7 @@ const PLAYERS = [
     "Nicknamed 'The Hick from French Lick'.",
     "Wears number 33." ] },
   { name:"Hakeem Olajuwon", hints:[
-    "Born and raised in West Africa.",
+    "Nigeria.",
     "Attended the University of Houston.",
     "Pick #1, 1984 NBA Draft.",
     "Center.",
@@ -440,7 +439,7 @@ const PLAYERS = [
     "Nicknamed 'The Dream'.",
     "Wears number 34." ] },
   { name:"Kareem Abdul-Jabbar", hints:[
-    "Grew up in New York City.",
+    "New York.",
     "Attended UCLA.",
     "Pick #1, 1969 NBA Draft.",
     "Center.",
@@ -449,7 +448,7 @@ const PLAYERS = [
     "Changed his name after converting to Islam early in his career.",
     "Wears number 33." ] },
   { name:"Wilt Chamberlain", hints:[
-    "Grew up in Philadelphia, Pennsylvania.",
+    "Pennsylvania.",
     "Attended the University of Kansas.",
     "Territorial pick, 1959 NBA Draft.",
     "Center.",
@@ -458,7 +457,7 @@ const PLAYERS = [
     "Nicknamed 'Wilt the Stilt' and 'The Big Dipper'.",
     "Wears number 13." ] },
   { name:"Bill Russell", hints:[
-    "Grew up in Oakland, California.",
+    "California.",
     "Attended the University of San Francisco.",
     "Pick #2, 1956 NBA Draft.",
     "Center.",
@@ -467,7 +466,7 @@ const PLAYERS = [
     "Has no widely used nickname beyond his own name.",
     "Wears number 6." ] },
   { name:"Kevin Garnett", hints:[
-    "Grew up in Mauldin, South Carolina.",
+    "South Carolina.",
     "Didn't attend college.",
     "Pick #5, 1995 NBA Draft.",
     "Power Forward.",
@@ -476,7 +475,7 @@ const PLAYERS = [
     "Nicknamed 'The Big Ticket'.",
     "Wears number 21 and number 2." ] },
   { name:"Dwyane Wade", hints:[
-    "Grew up in Chicago, Illinois.",
+    "Illinois.",
     "Attended Marquette University.",
     "Pick #5, 2003 NBA Draft.",
     "Shooting Guard.",
@@ -485,7 +484,7 @@ const PLAYERS = [
     "Nicknamed 'Flash'.",
     "Wears number 3." ] },
   { name:"Vince Carter", hints:[
-    "Grew up in Florida.",
+    "Florida.",
     "Attended the University of North Carolina.",
     "Pick #5, 1998 NBA Draft.",
     "Shooting Guard.",
@@ -494,7 +493,7 @@ const PLAYERS = [
     "Nicknamed 'Vinsanity' and 'Half-Man, Half-Amazing'.",
     "Wears number 15." ] },
   { name:"Chris Paul", hints:[
-    "Grew up in North Carolina.",
+    "North Carolina.",
     "Attended Wake Forest University.",
     "Pick #4, 2005 NBA Draft.",
     "Point Guard.",
@@ -503,7 +502,7 @@ const PLAYERS = [
     "Nicknamed 'CP3'.",
     "Wears number 3." ] },
   { name:"James Harden", hints:[
-    "Grew up in Los Angeles, California.",
+    "California.",
     "Attended Arizona State University.",
     "Pick #3, 2009 NBA Draft.",
     "Shooting Guard.",
@@ -512,7 +511,7 @@ const PLAYERS = [
     "Nicknamed 'The Beard'.",
     "Wears number 13." ] },
   { name:"Damian Lillard", hints:[
-    "Grew up in Oakland, California.",
+    "California.",
     "Attended Weber State University.",
     "Pick #6, 2012 NBA Draft.",
     "Point Guard.",
@@ -521,7 +520,7 @@ const PLAYERS = [
     "Nicknamed 'Dame'.",
     "Wears number 0." ] },
   { name:"Jayson Tatum", hints:[
-    "Grew up in St. Louis, Missouri.",
+    "Missouri.",
     "Attended Duke University.",
     "Pick #3, 2017 NBA Draft.",
     "Small Forward.",
@@ -530,7 +529,7 @@ const PLAYERS = [
     "Nicknamed 'JT'.",
     "Wears number 0." ] },
   { name:"Joel Embiid", hints:[
-    "Born and raised in Central Africa.",
+    "Cameroon.",
     "Attended the University of Kansas.",
     "Pick #3, 2014 NBA Draft.",
     "Center.",
@@ -539,7 +538,7 @@ const PLAYERS = [
     "Nicknamed 'The Process'.",
     "Wears number 21." ] },
   { name:"Kawhi Leonard", hints:[
-    "Grew up in Riverside, California.",
+    "California.",
     "Attended San Diego State University.",
     "Pick #15, 2011 NBA Draft.",
     "Small Forward.",
@@ -548,7 +547,7 @@ const PLAYERS = [
     "Nicknamed 'The Klaw'.",
     "Wears number 2." ] },
   { name:"Anthony Davis", hints:[
-    "Grew up in Chicago, Illinois.",
+    "Illinois.",
     "Attended the University of Kentucky.",
     "Pick #1, 2012 NBA Draft.",
     "Power Forward.",
@@ -557,7 +556,7 @@ const PLAYERS = [
     "Nicknamed 'The Brow'.",
     "Wears number 3." ] },
   { name:"Devin Booker", hints:[
-    "Grew up partly in Michigan and Mississippi.",
+    "Michigan.",
     "Attended the University of Kentucky.",
     "Pick #13, 2015 NBA Draft.",
     "Shooting Guard.",
@@ -566,7 +565,7 @@ const PLAYERS = [
     "Nicknamed 'Book'.",
     "Wears number 1." ] },
   { name:"Ja Morant", hints:[
-    "Grew up in South Carolina.",
+    "South Carolina.",
     "Attended Murray State University.",
     "Pick #2, 2019 NBA Draft.",
     "Point Guard.",
@@ -575,7 +574,7 @@ const PLAYERS = [
     "Goes by his own first name rather than a separate nickname.",
     "Wears number 12." ] },
   { name:"Trae Young", hints:[
-    "Grew up in Oklahoma.",
+    "Oklahoma.",
     "Attended the University of Oklahoma.",
     "Pick #5, 2018 NBA Draft.",
     "Point Guard.",
@@ -584,7 +583,7 @@ const PLAYERS = [
     "Nicknamed 'Ice Trae'.",
     "Wears number 11." ] },
   { name:"Zion Williamson", hints:[
-    "Grew up in South Carolina.",
+    "South Carolina.",
     "Attended Duke University.",
     "Pick #1, 2019 NBA Draft.",
     "Power Forward.",
@@ -593,7 +592,7 @@ const PLAYERS = [
     "Goes by his own first name rather than a separate nickname.",
     "Wears number 1." ] },
   { name:"Anthony Edwards", hints:[
-    "Grew up in Atlanta, Georgia.",
+    "Georgia.",
     "Attended the University of Georgia.",
     "Pick #1, 2020 NBA Draft.",
     "Shooting Guard.",
@@ -602,7 +601,7 @@ const PLAYERS = [
     "Nicknamed 'Ant-Man'.",
     "Wears number 1." ] },
   { name:"Shai Gilgeous-Alexander", hints:[
-    "Grew up in Hamilton, Ontario, Canada.",
+    "Canada.",
     "Attended the University of Kentucky.",
     "Pick #11, 2018 NBA Draft.",
     "Point Guard.",
@@ -611,7 +610,7 @@ const PLAYERS = [
     "Nicknamed 'SGA'.",
     "Wears number 2." ] },
   { name:"Paul George", hints:[
-    "Grew up in Palmdale, California.",
+    "California.",
     "Attended Fresno State University.",
     "Pick #10, 2010 NBA Draft.",
     "Small Forward.",
@@ -620,7 +619,7 @@ const PLAYERS = [
     "Nicknamed 'PG13'.",
     "Wears number 13." ] },
   { name:"Russell Westbrook", hints:[
-    "Grew up in Los Angeles, California.",
+    "California.",
     "Attended UCLA.",
     "Pick #4, 2008 NBA Draft.",
     "Point Guard.",
@@ -629,7 +628,7 @@ const PLAYERS = [
     "Nicknamed 'Russ' and 'Mr. Triple-Double'.",
     "Wears number 0." ] },
   { name:"Carmelo Anthony", hints:[
-    "Grew up in Baltimore, Maryland.",
+    "Maryland.",
     "Attended Syracuse University.",
     "Pick #3, 2003 NBA Draft.",
     "Small Forward.",
@@ -638,7 +637,7 @@ const PLAYERS = [
     "Nicknamed 'Melo'.",
     "Wears number 7." ] },
   { name:"Dwight Howard", hints:[
-    "Grew up in Atlanta, Georgia.",
+    "Georgia.",
     "Didn't attend college.",
     "Pick #1, 2004 NBA Draft.",
     "Center.",
@@ -647,7 +646,7 @@ const PLAYERS = [
     "Nicknamed 'Superman'.",
     "Wears number 12." ] },
   { name:"Chris Bosh", hints:[
-    "Grew up in Dallas, Texas.",
+    "Texas.",
     "Attended Georgia Tech.",
     "Pick #4, 2003 NBA Draft.",
     "Power Forward.",
@@ -656,7 +655,7 @@ const PLAYERS = [
     "Nicknamed 'CB4'.",
     "Wears number 1." ] },
   { name:"Ray Allen", hints:[
-    "Moved frequently as an Air Force kid before settling in South Carolina.",
+    "South Carolina.",
     "Attended the University of Connecticut.",
     "Pick #5, 1996 NBA Draft.",
     "Shooting Guard.",
@@ -665,7 +664,7 @@ const PLAYERS = [
     "Nicknamed 'Jesus Shuttlesworth' after a film role.",
     "Wears number 34." ] },
   { name:"Reggie Miller", hints:[
-    "Grew up in Riverside, California.",
+    "California.",
     "Attended UCLA.",
     "Pick #11, 1987 NBA Draft.",
     "Shooting Guard.",
@@ -674,7 +673,7 @@ const PLAYERS = [
     "Nicknamed 'Knick Killer' by rival fans.",
     "Wears number 31." ] },
   { name:"Scottie Pippen", hints:[
-    "Grew up in Hamburg, Arkansas.",
+    "Arkansas.",
     "Attended the University of Central Arkansas.",
     "Pick #5, 1987 NBA Draft.",
     "Small Forward.",
@@ -683,7 +682,7 @@ const PLAYERS = [
     "Nicknamed 'Pip'.",
     "Wears number 33." ] },
   { name:"Patrick Ewing", hints:[
-    "Born in Jamaica before moving to the U.S. as a child.",
+    "Massachusetts.",
     "Attended Georgetown University.",
     "Pick #1, 1985 NBA Draft.",
     "Center.",
@@ -692,7 +691,7 @@ const PLAYERS = [
     "Doesn't go by a widely used nickname beyond his own name.",
     "Wears number 33." ] },
   { name:"Charles Barkley", hints:[
-    "Grew up in Leeds, Alabama.",
+    "Alabama.",
     "Attended Auburn University.",
     "Pick #5, 1984 NBA Draft.",
     "Power Forward.",
@@ -701,7 +700,7 @@ const PLAYERS = [
     "Nicknamed 'Sir Charles' and 'The Round Mound of Rebound'.",
     "Wears number 34." ] },
   { name:"Karl Malone", hints:[
-    "Grew up in Summerfield, Louisiana.",
+    "Louisiana.",
     "Attended Louisiana Tech University.",
     "Pick #13, 1985 NBA Draft.",
     "Power Forward.",
@@ -710,7 +709,7 @@ const PLAYERS = [
     "Nicknamed 'The Mailman'.",
     "Wears number 32." ] },
   { name:"John Stockton", hints:[
-    "Grew up in Spokane, Washington.",
+    "Washington.",
     "Attended Gonzaga University.",
     "Pick #16, 1984 NBA Draft.",
     "Point Guard.",
@@ -719,7 +718,7 @@ const PLAYERS = [
     "Known for short shorts and a low profile off the court rather than a nickname.",
     "Wears number 12." ] },
   { name:"Clyde Drexler", hints:[
-    "Grew up in Houston, Texas.",
+    "Texas.",
     "Attended the University of Houston.",
     "Pick #14, 1983 NBA Draft.",
     "Shooting Guard.",
@@ -728,7 +727,7 @@ const PLAYERS = [
     "Nicknamed 'Clyde the Glide'.",
     "Wears number 22." ] },
   { name:"Isiah Thomas", hints:[
-    "Grew up in Chicago, Illinois.",
+    "Illinois.",
     "Attended Indiana University.",
     "Pick #2, 1981 NBA Draft.",
     "Point Guard.",
@@ -737,7 +736,7 @@ const PLAYERS = [
     "Nicknamed 'Zeke'.",
     "Wears number 11." ] },
   { name:"Julius Erving", hints:[
-    "Grew up on Long Island, New York.",
+    "New York.",
     "Attended the University of Massachusetts.",
     "Pick #12, 1972 NBA Draft.",
     "Small Forward.",
@@ -746,7 +745,7 @@ const PLAYERS = [
     "Nicknamed 'Dr. J'.",
     "Wears number 6." ] },
   { name:"David Robinson", hints:[
-    "Spent much of his childhood in Virginia.",
+    "Virginia.",
     "Attended the United States Naval Academy.",
     "Pick #1, 1987 NBA Draft.",
     "Center.",
@@ -755,7 +754,7 @@ const PLAYERS = [
     "Nicknamed 'The Admiral'.",
     "Wears number 50." ] },
   { name:"Steve Nash", hints:[
-    "Born in South Africa, raised in Canada.",
+    "Canada.",
     "Attended Santa Clara University.",
     "Pick #15, 1996 NBA Draft.",
     "Point Guard.",
@@ -764,14 +763,176 @@ const PLAYERS = [
     "Known by his own name, with no widely used nickname.",
     "Wears number 13." ] },
   { name:"Dominique Wilkins", hints:[
-    "Grew up in North Carolina.",
+    "North Carolina.",
     "Attended the University of Georgia.",
     "Pick #3, 1982 NBA Draft.",
     "Small Forward.",
     "Has played for five different NBA franchises.",
     "Won a legendary Slam Dunk Contest battle against a rival.",
     "Nicknamed 'The Human Highlight Film'.",
-    "Wears number 21." ] }
+    "Wears number 21." ] },
+  { name:"Draymond Green", hints:[
+    "Michigan.",
+    "Attended Michigan State University.",
+    "Pick #35, 2012 NBA Draft.",
+    "Power Forward.",
+    "Has played his entire career for one Bay Area franchise.",
+    "Won Defensive Player of the Year.",
+    "Nicknamed 'Dray'.",
+    "Wears number 23." ] },
+  { name:"Marcus Smart", hints:[
+    "Texas.",
+    "Attended Oklahoma State University.",
+    "Pick #6, 2014 NBA Draft.",
+    "Point Guard.",
+    "Has played for three different NBA franchises.",
+    "Won Defensive Player of the Year.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 36." ] },
+  { name:"Tony Allen", hints:[
+    "Illinois.",
+    "Attended Oklahoma State University.",
+    "Pick #25, 2004 NBA Draft.",
+    "Shooting Guard.",
+    "Has played for three different NBA franchises.",
+    "Named to the NBA All-Defensive Team multiple times.",
+    "Nicknamed 'The Grindfather'.",
+    "Wears number 9." ] },
+  { name:"Robert Horry", hints:[
+    "Alabama.",
+    "Attended the University of Alabama.",
+    "Pick #11, 1992 NBA Draft.",
+    "Power Forward.",
+    "Has played for four different NBA franchises.",
+    "Won seven championships despite never making an All-Star team.",
+    "Nicknamed 'Big Shot Rob'.",
+    "Wears number 5." ] },
+  { name:"Danny Green", hints:[
+    "New York.",
+    "Attended the University of North Carolina.",
+    "Pick #46, 2009 NBA Draft.",
+    "Shooting Guard.",
+    "Has played for six different NBA franchises.",
+    "Won championships with three different franchises.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 14." ] },
+  { name:"P.J. Tucker", hints:[
+    "North Carolina.",
+    "Attended the University of Texas.",
+    "Pick #35, 2006 NBA Draft.",
+    "Power Forward.",
+    "Has played for several different NBA franchises.",
+    "Known for guarding the opposing team's best player regardless of size difference.",
+    "Goes by his initials rather than a separate nickname.",
+    "Wears number 17." ] },
+  { name:"Patrick Beverley", hints:[
+    "Illinois.",
+    "Attended the University of Arkansas.",
+    "Pick #42, 2009 NBA Draft.",
+    "Point Guard.",
+    "Has played for several different NBA franchises.",
+    "Named to the NBA All-Defensive Team.",
+    "Nicknamed 'Pat Bev'.",
+    "Wears number 21." ] },
+  { name:"Shane Battier", hints:[
+    "Michigan.",
+    "Attended Duke University.",
+    "Pick #6, 2001 NBA Draft.",
+    "Small Forward.",
+    "Has played for three different NBA franchises.",
+    "Won two championships as a role player alongside a superstar trio.",
+    "Nicknamed 'The Secretary of Defense'.",
+    "Wears number 31." ] },
+  { name:"Bruce Bowen", hints:[
+    "California.",
+    "Attended Cal State Fullerton.",
+    "Went undrafted in 1993.",
+    "Small Forward.",
+    "Has played for four different NBA franchises.",
+    "Named to the NBA All-Defensive Team eight times.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 12." ] },
+  { name:"Mike Conley", hints:[
+    "Indiana.",
+    "Attended Ohio State University.",
+    "Pick #4, 2007 NBA Draft.",
+    "Point Guard.",
+    "Has played for three different NBA franchises.",
+    "Won the NBA Sportsmanship Award multiple times.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 11." ] },
+  { name:"Marc Gasol", hints:[
+    "Spain.",
+    "Didn't attend college.",
+    "Pick #48, 2007 NBA Draft.",
+    "Center.",
+    "Has played for three different NBA franchises.",
+    "Won Defensive Player of the Year.",
+    "Nicknamed 'Big Spain'.",
+    "Wears number 33." ] },
+  { name:"Al Horford", hints:[
+    "Dominican Republic.",
+    "Attended the University of Florida.",
+    "Pick #3, 2007 NBA Draft.",
+    "Center.",
+    "Has played for four different NBA franchises.",
+    "Won an NBA championship late in his career.",
+    "Nicknamed 'Big Al'.",
+    "Wears number 15." ] },
+  { name:"Udonis Haslem", hints:[
+    "Florida.",
+    "Attended the University of Florida.",
+    "Went undrafted in 2002.",
+    "Power Forward.",
+    "Played his entire career for his hometown franchise.",
+    "Won three championships with that same hometown team.",
+    "Nicknamed 'UD'.",
+    "Wears number 40." ] },
+  { name:"Tayshaun Prince", hints:[
+    "California.",
+    "Attended the University of Kentucky.",
+    "Pick #23, 2002 NBA Draft.",
+    "Small Forward.",
+    "Has played for four different NBA franchises.",
+    "Won a championship as part of a defense-first starting five.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 22." ] },
+  { name:"Trevor Ariza", hints:[
+    "California.",
+    "Attended UCLA.",
+    "Pick #43, 2004 NBA Draft.",
+    "Small Forward.",
+    "Has played for several different NBA franchises.",
+    "Won a championship as a key perimeter defender.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 1." ] },
+  { name:"Thabo Sefolosha", hints:[
+    "Switzerland.",
+    "Didn't attend college.",
+    "Pick #13, 2006 NBA Draft.",
+    "Shooting Guard.",
+    "Has played for four different NBA franchises.",
+    "Named to the NBA All-Defensive Team.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 25." ] },
+  { name:"Jae Crowder", hints:[
+    "Georgia.",
+    "Attended Marquette University.",
+    "Pick #34, 2012 NBA Draft.",
+    "Small Forward.",
+    "Has played for several different NBA franchises.",
+    "Named to the NBA All-Defensive Team.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 99." ] },
+  { name:"Derrick White", hints:[
+    "Colorado.",
+    "Attended the University of Colorado.",
+    "Pick #29, 2017 NBA Draft.",
+    "Point Guard.",
+    "Has played for two different NBA franchises.",
+    "Won an NBA championship.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 9." ] }
 ];
 
 const SCORE_TABLE = {1:100,2:90,3:80,4:70,5:60,6:45,7:30,8:15};
@@ -1022,12 +1183,6 @@ try{
 document.getElementById('cookieOk').addEventListener('click', ()=>{
   document.getElementById('cookieBar').classList.remove('show');
   try{ localStorage.setItem('hooptest_cookie_ack','1'); }catch(e){}
-});
-
-document.getElementById('resetLink').addEventListener('click', e=>{
-  e.preventDefault();
-  localStorage.removeItem(storageKey);
-  location.href = location.pathname; // drop any query string too, then reload
 });
 
 document.getElementById('shareBtn').addEventListener('click', ()=>{
