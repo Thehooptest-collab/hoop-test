@@ -133,6 +133,16 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 }
 .score-label{color:var(--net-dim);font-size:13px;}
 .answer-name{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:22px;margin:10px 0 4px;}
+.reveal-card{
+  margin:14px 0;padding:14px 16px;border-radius:8px;
+  background:var(--court);border:1px solid var(--line);
+  border-left:4px solid var(--ball); /* recolored per-player via JS to their most recent team */
+}
+.reveal-card .team-path{justify-content:center;margin-bottom:10px;}
+.reveal-card a{
+  display:inline-block;font-size:13px;font-weight:600;color:var(--ball);text-decoration:none;
+}
+.reveal-card a:hover{text-decoration:underline;}
 
 .hint-track{display:flex;gap:5px;margin-top:14px;}
 .pip{flex:1;height:6px;border-radius:3px;background:var(--line);}
@@ -140,6 +150,9 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 
 .share-btn{
   width:100%;margin-top:14px;background:var(--net);color:var(--court);
+}
+.share-btn-outline{
+  background:transparent;border:1px solid var(--line);color:var(--net);margin-top:8px;
 }
 .footer-note{text-align:center;color:var(--net-dim);font-size:12px;margin-top:18px;}
 .stats-line{display:none;color:var(--net-dim);font-size:13px;margin-top:10px;}
@@ -214,6 +227,15 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:0.001ms !important;transition-duration:0.001ms !important;}
 }
+
+.confetti-container{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden;}
+.confetti-piece{
+  position:absolute;top:-12px;width:8px;height:14px;opacity:.9;border-radius:1px;
+  animation-name:confetti-fall;animation-timing-function:ease-in;animation-fill-mode:forwards;
+}
+@keyframes confetti-fall{
+  to{ transform:translateY(110vh) rotate(var(--rot,360deg)); opacity:0; }
+}
 </style>
 </head>
 <body>
@@ -258,8 +280,13 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
     <div class="score-label">FINAL SCORE</div>
     <div class="score-big" id="finalScore">0</div>
     <div class="answer-name" id="answerName"></div>
+    <div class="reveal-card" id="revealCard">
+      <div class="team-path" id="revealTeamPath"></div>
+      <a href="#" id="revealProfileLink" target="_blank" rel="noopener noreferrer">View full profile ↗</a>
+    </div>
     <div class="stats-line" id="statsLine"></div>
     <button class="share-btn" id="shareBtn">Copy result</button>
+    <button class="share-btn share-btn-outline" id="shareImageBtn">Share image</button>
   </div>
 
   <div class="footer-note">One player, once a day. 8 hints, scored by how few you need.</div>
@@ -292,7 +319,14 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
     <h4>Who is this game for?</h4>
     <p>Anyone who likes basketball trivia, from casual fans to hardcore NBA historians. The difficulty scales naturally, since the first hint is always the vaguest and later ones get progressively more specific.</p>
 
-    <p class="about-links"><a href="/privacy-policy.html">Privacy policy</a></p>
+    <!-- Uses the same email you set in privacy-policy.html / terms-of-use.html — replace YOUR-EMAIL-HERE in all three places once you pick one. -->
+    <p class="about-links">
+      <a href="/privacy-policy.html">Privacy policy</a>
+      &nbsp;·&nbsp;
+      <a href="/terms-of-use.html">Terms of use</a>
+      &nbsp;·&nbsp;
+      <a href="mailto:YOUR-EMAIL-HERE?subject=Hoop%20Test%20feedback">Spot a wrong hint? Let us know</a>
+    </p>
     <button class="modal-close" id="aboutClose" aria-label="Close about section">Got it</button>
   </div>
 </div>
@@ -353,7 +387,7 @@ const TEAM_INFO = {
 
 const PLAYERS = [
   { name:"LeBron James", hints:[
-    "Averaging about 27.0 points per game for his career.",
+    "Averaging about 27.0 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #1, 2003 NBA Draft.",
     "Small Forward.",
@@ -362,7 +396,7 @@ const PLAYERS = [
     "Nicknamed 'King James'.",
     "Has worn number 23 and number 6." ] , teams:["CLE","MIA","CLE","LAL","PHI"] },
   { name:"Stephen Curry", hints:[
-    "Averaging about 24.8 points per game for his career.",
+    "Averaging about 24.8 points per game for his NBA career.",
     "Attended Davidson College.",
     "Pick #7, 2009 NBA Draft.",
     "Point Guard.",
@@ -371,7 +405,7 @@ const PLAYERS = [
     "Known simply as 'Chef' for how he 'cooks' defenders.",
     "Wears number 30." ] , teams:["GSW"] },
   { name:"Giannis Antetokounmpo", hints:[
-    "Averaging about 23.5 points per game for his career.",
+    "Averaging about 23.5 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #15, 2013 NBA Draft.",
     "Power Forward.",
@@ -380,7 +414,7 @@ const PLAYERS = [
     "Nicknamed 'The Greek Freak'.",
     "Wears number 34." ] , teams:["MIL","MIA"] },
   { name:"Kevin Durant", hints:[
-    "Averaging about 27.2 points per game for his career.",
+    "Averaging about 27.2 points per game for his NBA career.",
     "Attended the University of Texas.",
     "Pick #2, 2007 NBA Draft.",
     "Small Forward.",
@@ -389,7 +423,7 @@ const PLAYERS = [
     "Known simply by the initials 'KD'.",
     "Has worn number 35 and number 7." ] , teams:["OKC","GSW","BKN","PHX","HOU"] },
   { name:"Nikola Jokic", hints:[
-    "Averaging about 20.0 points per game for his career.",
+    "Averaging about 20.0 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #41, 2014 NBA Draft.",
     "Center.",
@@ -398,7 +432,7 @@ const PLAYERS = [
     "Nicknamed 'The Joker'.",
     "Wears number 15." ] , teams:["DEN"] },
   { name:"Kobe Bryant", hints:[
-    "Averaged 25.0 points per game for his career.",
+    "Averaged 25.0 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #13, 1996 NBA Draft.",
     "Shooting Guard.",
@@ -407,7 +441,7 @@ const PLAYERS = [
     "Nicknamed 'Black Mamba'.",
     "Wore number 8, then switched to number 24." ] , teams:["LAL"] },
   { name:"Michael Jordan", hints:[
-    "Averaged 30.1 points per game for his career.",
+    "Averaged 30.1 points per game for his NBA career.",
     "Attended the University of North Carolina.",
     "Pick #3, 1984 NBA Draft.",
     "Shooting Guard.",
@@ -416,7 +450,7 @@ const PLAYERS = [
     "Nicknamed 'Air' and 'His Airness'.",
     "Wore number 23 for nearly his entire career." ] , teams:["CHI","WAS"] },
   { name:"Luka Doncic", hints:[
-    "Averaging about 28.5 points per game for his career.",
+    "Averaging about 28.5 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #3, 2018 NBA Draft.",
     "Point Guard.",
@@ -425,7 +459,7 @@ const PLAYERS = [
     "Sometimes called 'Luka Magic'.",
     "Wears number 77." ] , teams:["DAL","LAL"] },
   { name:"Tim Duncan", hints:[
-    "Averaged 19.0 points per game for his career.",
+    "Averaged 19.0 points per game for his NBA career.",
     "Attended Wake Forest University.",
     "Pick #1, 1997 NBA Draft.",
     "Power Forward.",
@@ -434,7 +468,7 @@ const PLAYERS = [
     "Nicknamed 'The Big Fundamental'.",
     "Wears number 21." ] , teams:["SAS"] },
   { name:"Shaquille O'Neal", hints:[
-    "Averaged 23.7 points per game for his career.",
+    "Averaged 23.7 points per game for his NBA career.",
     "Attended Louisiana State University.",
     "Pick #1, 1992 NBA Draft.",
     "Center.",
@@ -443,7 +477,7 @@ const PLAYERS = [
     "Has gone by dozens of nicknames, including 'The Big Aristotle'.",
     "Wore number 34 and number 32." ] , teams:["ORL","LAL","MIA","PHX","CLE","BOS"] },
   { name:"Allen Iverson", hints:[
-    "Averaged 26.7 points per game for his career.",
+    "Averaged 26.7 points per game for his NBA career.",
     "Attended Georgetown University.",
     "Pick #1, 1996 NBA Draft.",
     "Point Guard.",
@@ -452,7 +486,7 @@ const PLAYERS = [
     "Nicknamed 'The Answer'.",
     "Wears number 3." ] , teams:["PHI","DEN","DET","MEM","PHI"] },
   { name:"Dirk Nowitzki", hints:[
-    "Averaged 20.7 points per game for his career.",
+    "Averaged 20.7 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #9, 1998 NBA Draft.",
     "Power Forward.",
@@ -461,7 +495,7 @@ const PLAYERS = [
     "Early on, some called him the 'German Wunderkind'.",
     "Wears number 41." ] , teams:["DAL"] },
   { name:"Magic Johnson", hints:[
-    "Averaged 19.5 points per game for his career.",
+    "Averaged 19.5 points per game for his NBA career.",
     "Attended Michigan State University.",
     "Pick #1, 1979 NBA Draft.",
     "Point Guard.",
@@ -470,7 +504,7 @@ const PLAYERS = [
     "Nicknamed 'Magic'.",
     "Wears number 32." ] , teams:["LAL"] },
   { name:"Larry Bird", hints:[
-    "Averaged 24.3 points per game for his career.",
+    "Averaged 24.3 points per game for his NBA career.",
     "Attended Indiana State University.",
     "Pick #6, 1978 NBA Draft.",
     "Small Forward.",
@@ -479,7 +513,7 @@ const PLAYERS = [
     "Nicknamed 'The Hick from French Lick'.",
     "Wears number 33." ] , teams:["BOS"] },
   { name:"Hakeem Olajuwon", hints:[
-    "Averaged 21.8 points per game for his career.",
+    "Averaged 21.8 points per game for his NBA career.",
     "Attended the University of Houston.",
     "Pick #1, 1984 NBA Draft.",
     "Center.",
@@ -488,7 +522,7 @@ const PLAYERS = [
     "Nicknamed 'The Dream'.",
     "Wears number 34." ] , teams:["HOU","TOR"] },
   { name:"Kareem Abdul-Jabbar", hints:[
-    "Averaged 24.6 points per game for his career.",
+    "Averaged 24.6 points per game for his NBA career.",
     "Attended UCLA.",
     "Pick #1, 1969 NBA Draft.",
     "Center.",
@@ -497,7 +531,7 @@ const PLAYERS = [
     "Changed his name after converting to Islam early in his career.",
     "Wears number 33." ] , teams:["MIL","LAL"] },
   { name:"Wilt Chamberlain", hints:[
-    "Averaged 30.1 points per game for his career.",
+    "Averaged 30.1 points per game for his NBA career.",
     "Attended the University of Kansas.",
     "Territorial pick, 1959 NBA Draft.",
     "Center.",
@@ -506,7 +540,7 @@ const PLAYERS = [
     "Nicknamed 'Wilt the Stilt' and 'The Big Dipper'.",
     "Wears number 13." ] , teams:["GSW","PHI","LAL"] },
   { name:"Bill Russell", hints:[
-    "Averaged 15.1 points per game for his career.",
+    "Averaged 15.1 points per game for his NBA career.",
     "Attended the University of San Francisco.",
     "Pick #2, 1956 NBA Draft.",
     "Center.",
@@ -515,7 +549,7 @@ const PLAYERS = [
     "Has no widely used nickname beyond his own name.",
     "Wears number 6." ] , teams:["BOS"] },
   { name:"Kevin Garnett", hints:[
-    "Averaged 17.8 points per game for his career.",
+    "Averaged 17.8 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #5, 1995 NBA Draft.",
     "Power Forward.",
@@ -524,7 +558,7 @@ const PLAYERS = [
     "Nicknamed 'The Big Ticket'.",
     "Wears number 21 and number 2." ] , teams:["MIN","BOS","BKN"] },
   { name:"Dwyane Wade", hints:[
-    "Averaged 22.0 points per game for his career.",
+    "Averaged 22.0 points per game for his NBA career.",
     "Attended Marquette University.",
     "Pick #5, 2003 NBA Draft.",
     "Shooting Guard.",
@@ -533,7 +567,7 @@ const PLAYERS = [
     "Nicknamed 'Flash'.",
     "Wears number 3." ] , teams:["MIA","CHI","CLE","MIA"] },
   { name:"Vince Carter", hints:[
-    "Averaged 16.7 points per game for his career.",
+    "Averaged 16.7 points per game for his NBA career.",
     "Attended the University of North Carolina.",
     "Pick #5, 1998 NBA Draft.",
     "Shooting Guard.",
@@ -542,7 +576,7 @@ const PLAYERS = [
     "Nicknamed 'Vinsanity' and 'Half-Man, Half-Amazing'.",
     "Wears number 15." ] , teams:["TOR","BKN","ORL","PHX","DAL","MEM","SAC","ATL"] },
   { name:"Chris Paul", hints:[
-    "Averaging about 17.5 points per game for his career.",
+    "Averaging about 17.5 points per game for his NBA career.",
     "Attended Wake Forest University.",
     "Pick #4, 2005 NBA Draft.",
     "Point Guard.",
@@ -551,7 +585,7 @@ const PLAYERS = [
     "Nicknamed 'CP3'.",
     "Wears number 3." ] , teams:["CHA","LAC","HOU","OKC","PHX","GSW","SAS","LAC","TOR"] },
   { name:"James Harden", hints:[
-    "Averaging about 24.8 points per game for his career.",
+    "Averaging about 24.8 points per game for his NBA career.",
     "Attended Arizona State University.",
     "Pick #3, 2009 NBA Draft.",
     "Shooting Guard.",
@@ -560,7 +594,7 @@ const PLAYERS = [
     "Nicknamed 'The Beard'.",
     "Wears number 13." ] , teams:["OKC","HOU","BKN","PHI","LAC","CLE"] },
   { name:"Damian Lillard", hints:[
-    "Averaging about 25.2 points per game for his career.",
+    "Averaging about 25.2 points per game for his NBA career.",
     "Attended Weber State University.",
     "Pick #6, 2012 NBA Draft.",
     "Point Guard.",
@@ -569,7 +603,7 @@ const PLAYERS = [
     "Nicknamed 'Dame'.",
     "Wears number 0." ] , teams:["POR","MIL","POR"] },
   { name:"Jayson Tatum", hints:[
-    "Averaging about 24.0 points per game for his career.",
+    "Averaging about 24.0 points per game for his NBA career.",
     "Attended Duke University.",
     "Pick #3, 2017 NBA Draft.",
     "Small Forward.",
@@ -578,7 +612,7 @@ const PLAYERS = [
     "Nicknamed 'JT'.",
     "Wears number 0." ] , teams:["BOS"] },
   { name:"Joel Embiid", hints:[
-    "Averaging about 27.5 points per game for his career.",
+    "Averaging about 27.5 points per game for his NBA career.",
     "Attended the University of Kansas.",
     "Pick #3, 2014 NBA Draft.",
     "Center.",
@@ -587,7 +621,7 @@ const PLAYERS = [
     "Nicknamed 'The Process'.",
     "Wears number 21." ] , teams:["PHI"] },
   { name:"Kawhi Leonard", hints:[
-    "Averaging about 20.0 points per game for his career.",
+    "Averaging about 20.0 points per game for his NBA career.",
     "Attended San Diego State University.",
     "Pick #15, 2011 NBA Draft.",
     "Small Forward.",
@@ -596,7 +630,7 @@ const PLAYERS = [
     "Nicknamed 'The Klaw'.",
     "Wears number 2." ] , teams:["SAS","TOR","LAC","TOR"] },
   { name:"Anthony Davis", hints:[
-    "Averaging about 24.0 points per game for his career.",
+    "Averaging about 24.0 points per game for his NBA career.",
     "Attended the University of Kentucky.",
     "Pick #1, 2012 NBA Draft.",
     "Power Forward.",
@@ -605,7 +639,7 @@ const PLAYERS = [
     "Nicknamed 'The Brow'.",
     "Wears number 3." ] , teams:["NOP","LAL","DAL","WAS"] },
   { name:"Devin Booker", hints:[
-    "Averaging about 24.5 points per game for his career.",
+    "Averaging about 24.5 points per game for his NBA career.",
     "Attended the University of Kentucky.",
     "Pick #13, 2015 NBA Draft.",
     "Shooting Guard.",
@@ -614,7 +648,7 @@ const PLAYERS = [
     "Nicknamed 'Book'.",
     "Wears number 1." ] , teams:["PHX"] },
   { name:"Ja Morant", hints:[
-    "Averaging about 22.0 points per game for his career.",
+    "Averaging about 22.0 points per game for his NBA career.",
     "Attended Murray State University.",
     "Pick #2, 2019 NBA Draft.",
     "Point Guard.",
@@ -623,7 +657,7 @@ const PLAYERS = [
     "Goes by his own first name rather than a separate nickname.",
     "Wears number 12." ] , teams:["MEM","POR"] },
   { name:"Trae Young", hints:[
-    "Averaging about 25.0 points per game for his career.",
+    "Averaging about 25.0 points per game for his NBA career.",
     "Attended the University of Oklahoma.",
     "Pick #5, 2018 NBA Draft.",
     "Point Guard.",
@@ -632,7 +666,7 @@ const PLAYERS = [
     "Nicknamed 'Ice Trae'.",
     "Wears number 11." ] , teams:["ATL","WAS"] },
   { name:"Zion Williamson", hints:[
-    "Averaging about 23.0 points per game for his career.",
+    "Averaging about 23.0 points per game for his NBA career.",
     "Attended Duke University.",
     "Pick #1, 2019 NBA Draft.",
     "Power Forward.",
@@ -641,7 +675,7 @@ const PLAYERS = [
     "Goes by his own first name rather than a separate nickname.",
     "Wears number 1." ] , teams:["NOP"] },
   { name:"Anthony Edwards", hints:[
-    "Averaging about 24.0 points per game for his career.",
+    "Averaging about 24.0 points per game for his NBA career.",
     "Attended the University of Georgia.",
     "Pick #1, 2020 NBA Draft.",
     "Shooting Guard.",
@@ -650,7 +684,7 @@ const PLAYERS = [
     "Nicknamed 'Ant-Man'.",
     "Wears number 1." ] , teams:["MIN"] },
   { name:"Shai Gilgeous-Alexander", hints:[
-    "Averaging about 25.5 points per game for his career.",
+    "Averaging about 25.5 points per game for his NBA career.",
     "Attended the University of Kentucky.",
     "Pick #11, 2018 NBA Draft.",
     "Point Guard.",
@@ -659,7 +693,7 @@ const PLAYERS = [
     "Nicknamed 'SGA'.",
     "Wears number 2." ] , teams:["OKC"] },
   { name:"Paul George", hints:[
-    "Averaging about 19.5 points per game for his career.",
+    "Averaging about 19.5 points per game for his NBA career.",
     "Attended Fresno State University.",
     "Pick #10, 2010 NBA Draft.",
     "Small Forward.",
@@ -668,7 +702,7 @@ const PLAYERS = [
     "Nicknamed 'PG13'.",
     "Wears number 13." ] , teams:["IND","OKC","LAC","PHI","BOS"] },
   { name:"Russell Westbrook", hints:[
-    "Averaged 21.5 points per game for his career.",
+    "Averaged 21.5 points per game for his NBA career.",
     "Attended UCLA.",
     "Pick #4, 2008 NBA Draft.",
     "Point Guard.",
@@ -677,7 +711,7 @@ const PLAYERS = [
     "Nicknamed 'Russ' and 'Mr. Triple-Double'.",
     "Wears number 0." ] , teams:["OKC","HOU","WAS","LAL","LAC","DEN","SAC"] },
   { name:"Carmelo Anthony", hints:[
-    "Averaged 22.5 points per game for his career.",
+    "Averaged 22.5 points per game for his NBA career.",
     "Attended Syracuse University.",
     "Pick #3, 2003 NBA Draft.",
     "Small Forward.",
@@ -686,7 +720,7 @@ const PLAYERS = [
     "Nicknamed 'Melo'.",
     "Wears number 7." ] , teams:["DEN","NYK","OKC","HOU","POR","LAL"] },
   { name:"Dwight Howard", hints:[
-    "Averaged 15.7 points per game for his career.",
+    "Averaged 15.7 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #1, 2004 NBA Draft.",
     "Center.",
@@ -695,7 +729,7 @@ const PLAYERS = [
     "Nicknamed 'Superman'.",
     "Wears number 12." ] , teams:["ORL","LAL","HOU","ATL","CHA","WAS","PHI","LAL"] },
   { name:"Chris Bosh", hints:[
-    "Averaged 19.2 points per game for his career.",
+    "Averaged 19.2 points per game for his NBA career.",
     "Attended Georgia Tech.",
     "Pick #4, 2003 NBA Draft.",
     "Power Forward.",
@@ -704,7 +738,7 @@ const PLAYERS = [
     "Nicknamed 'CB4'.",
     "Wears number 1." ] , teams:["TOR","MIA"] },
   { name:"Ray Allen", hints:[
-    "Averaged 18.9 points per game for his career.",
+    "Averaged 18.9 points per game for his NBA career.",
     "Attended the University of Connecticut.",
     "Pick #5, 1996 NBA Draft.",
     "Shooting Guard.",
@@ -713,7 +747,7 @@ const PLAYERS = [
     "Nicknamed 'Jesus Shuttlesworth' after a film role.",
     "Wears number 34." ] , teams:["MIL","SEA","BOS","MIA"] },
   { name:"Reggie Miller", hints:[
-    "Averaged 18.2 points per game for his career.",
+    "Averaged 18.2 points per game for his NBA career.",
     "Attended UCLA.",
     "Pick #11, 1987 NBA Draft.",
     "Shooting Guard.",
@@ -722,7 +756,7 @@ const PLAYERS = [
     "Nicknamed 'Knick Killer' by rival fans.",
     "Wears number 31." ] , teams:["IND"] },
   { name:"Scottie Pippen", hints:[
-    "Averaged 16.1 points per game for his career.",
+    "Averaged 16.1 points per game for his NBA career.",
     "Attended the University of Central Arkansas.",
     "Pick #5, 1987 NBA Draft.",
     "Small Forward.",
@@ -731,7 +765,7 @@ const PLAYERS = [
     "Nicknamed 'Pip'.",
     "Wears number 33." ] , teams:["CHI","HOU","POR","CHI"] },
   { name:"Patrick Ewing", hints:[
-    "Averaged 21.0 points per game for his career.",
+    "Averaged 21.0 points per game for his NBA career.",
     "Attended Georgetown University.",
     "Pick #1, 1985 NBA Draft.",
     "Center.",
@@ -740,7 +774,7 @@ const PLAYERS = [
     "Doesn't go by a widely used nickname beyond his own name.",
     "Wears number 33." ] , teams:["NYK","SEA","ORL"] },
   { name:"Charles Barkley", hints:[
-    "Averaged 22.1 points per game for his career.",
+    "Averaged 22.1 points per game for his NBA career.",
     "Attended Auburn University.",
     "Pick #5, 1984 NBA Draft.",
     "Power Forward.",
@@ -749,7 +783,7 @@ const PLAYERS = [
     "Nicknamed 'Sir Charles' and 'The Round Mound of Rebound'.",
     "Wears number 34." ] , teams:["PHI","PHX","HOU"] },
   { name:"Karl Malone", hints:[
-    "Averaged 25.0 points per game for his career.",
+    "Averaged 25.0 points per game for his NBA career.",
     "Attended Louisiana Tech University.",
     "Pick #13, 1985 NBA Draft.",
     "Power Forward.",
@@ -758,7 +792,7 @@ const PLAYERS = [
     "Nicknamed 'The Mailman'.",
     "Wears number 32." ] , teams:["UTA","LAL"] },
   { name:"John Stockton", hints:[
-    "Averaged 13.1 points per game for his career.",
+    "Averaged 13.1 points per game for his NBA career.",
     "Attended Gonzaga University.",
     "Pick #16, 1984 NBA Draft.",
     "Point Guard.",
@@ -767,7 +801,7 @@ const PLAYERS = [
     "Known for short shorts and a low profile off the court rather than a nickname.",
     "Wears number 12." ] , teams:["UTA"] },
   { name:"Clyde Drexler", hints:[
-    "Averaged 20.4 points per game for his career.",
+    "Averaged 20.4 points per game for his NBA career.",
     "Attended the University of Houston.",
     "Pick #14, 1983 NBA Draft.",
     "Shooting Guard.",
@@ -776,7 +810,7 @@ const PLAYERS = [
     "Nicknamed 'Clyde the Glide'.",
     "Wears number 22." ] , teams:["POR","HOU"] },
   { name:"Isiah Thomas", hints:[
-    "Averaged 19.2 points per game for his career.",
+    "Averaged 19.2 points per game for his NBA career.",
     "Attended Indiana University.",
     "Pick #2, 1981 NBA Draft.",
     "Point Guard.",
@@ -794,7 +828,7 @@ const PLAYERS = [
     "Nicknamed 'Dr. J'.",
     "Wears number 6." ] , teams:["VAS","BKN","PHI"] },
   { name:"David Robinson", hints:[
-    "Averaged 21.1 points per game for his career.",
+    "Averaged 21.1 points per game for his NBA career.",
     "Attended the United States Naval Academy.",
     "Pick #1, 1987 NBA Draft.",
     "Center.",
@@ -803,7 +837,7 @@ const PLAYERS = [
     "Nicknamed 'The Admiral'.",
     "Wears number 50." ] , teams:["SAS"] },
   { name:"Steve Nash", hints:[
-    "Averaged 14.3 points per game for his career.",
+    "Averaged 14.3 points per game for his NBA career.",
     "Attended Santa Clara University.",
     "Pick #15, 1996 NBA Draft.",
     "Point Guard.",
@@ -812,7 +846,7 @@ const PLAYERS = [
     "Known by his own name, with no widely used nickname.",
     "Wears number 13." ] , teams:["PHX","DAL","PHX","LAL"] },
   { name:"Dominique Wilkins", hints:[
-    "Averaged 24.8 points per game for his career.",
+    "Averaged 24.8 points per game for his NBA career.",
     "Attended the University of Georgia.",
     "Pick #3, 1982 NBA Draft.",
     "Small Forward.",
@@ -821,7 +855,7 @@ const PLAYERS = [
     "Nicknamed 'The Human Highlight Film'.",
     "Wears number 21." ] , teams:["ATL","LAC","BOS","SAS","ORL"] },
   { name:"Draymond Green", hints:[
-    "Averaging about 8.5 points per game for his career.",
+    "Averaging about 8.5 points per game for his NBA career.",
     "Attended Michigan State University.",
     "Pick #35, 2012 NBA Draft.",
     "Power Forward.",
@@ -830,7 +864,7 @@ const PLAYERS = [
     "Nicknamed 'Dray'.",
     "Wears number 23." ] , teams:["GSW"] },
   { name:"Marcus Smart", hints:[
-    "Averaging about 10.5 points per game for his career.",
+    "Averaging about 10.5 points per game for his NBA career.",
     "Attended Oklahoma State University.",
     "Pick #6, 2014 NBA Draft.",
     "Point Guard.",
@@ -839,7 +873,7 @@ const PLAYERS = [
     "Goes by his own name rather than a separate nickname.",
     "Wears number 36." ] , teams:["BOS","MEM","WAS","LAL","HOU"] },
   { name:"Tony Allen", hints:[
-    "Averaged 8.5 points per game for his career.",
+    "Averaged 8.5 points per game for his NBA career.",
     "Attended Oklahoma State University.",
     "Pick #25, 2004 NBA Draft.",
     "Shooting Guard.",
@@ -848,7 +882,7 @@ const PLAYERS = [
     "Nicknamed 'The Grindfather'.",
     "Wears number 9." ] , teams:["BOS","MEM","NOP"] },
   { name:"Robert Horry", hints:[
-    "Averaged 7.0 points per game for his career.",
+    "Averaged 7.0 points per game for his NBA career.",
     "Attended the University of Alabama.",
     "Pick #11, 1992 NBA Draft.",
     "Power Forward.",
@@ -857,7 +891,7 @@ const PLAYERS = [
     "Nicknamed 'Big Shot Rob'.",
     "Wears number 5." ] , teams:["HOU","PHX","LAL","SAS"] },
   { name:"Danny Green", hints:[
-    "Averaged 8.0 points per game for his career.",
+    "Averaged 8.0 points per game for his NBA career.",
     "Attended the University of North Carolina.",
     "Pick #46, 2009 NBA Draft.",
     "Shooting Guard.",
@@ -866,7 +900,7 @@ const PLAYERS = [
     "Goes by his own name rather than a separate nickname.",
     "Wears number 14." ] , teams:["CLE","SAS","TOR","LAL","PHI","MEM"] },
   { name:"P.J. Tucker", hints:[
-    "Averaged 5.5 points per game for his career.",
+    "Averaged 5.5 points per game for his NBA career.",
     "Attended the University of Texas.",
     "Pick #35, 2006 NBA Draft.",
     "Power Forward.",
@@ -875,7 +909,7 @@ const PLAYERS = [
     "Goes by his initials rather than a separate nickname.",
     "Wears number 17." ] , teams:["PHX","TOR","HOU","MIL","PHI","LAC"] },
   { name:"Patrick Beverley", hints:[
-    "Averaged 8.0 points per game for his career.",
+    "Averaged 8.0 points per game for his NBA career.",
     "Attended the University of Arkansas.",
     "Pick #42, 2009 NBA Draft.",
     "Point Guard.",
@@ -884,7 +918,7 @@ const PLAYERS = [
     "Nicknamed 'Pat Bev'.",
     "Wears number 21." ] , teams:["HOU","LAC","MIN","CHI","LAL"] },
   { name:"Shane Battier", hints:[
-    "Averaged 8.6 points per game for his career.",
+    "Averaged 8.6 points per game for his NBA career.",
     "Attended Duke University.",
     "Pick #6, 2001 NBA Draft.",
     "Small Forward.",
@@ -893,7 +927,7 @@ const PLAYERS = [
     "Nicknamed 'The Secretary of Defense'.",
     "Wears number 31." ] , teams:["MEM","HOU","MIA"] },
   { name:"Bruce Bowen", hints:[
-    "Averaged 6.4 points per game for his career.",
+    "Averaged 6.4 points per game for his NBA career.",
     "Attended Cal State Fullerton.",
     "Went undrafted in 1993.",
     "Small Forward.",
@@ -902,7 +936,7 @@ const PLAYERS = [
     "Goes by his own name rather than a separate nickname.",
     "Wears number 12." ] , teams:["MIA","BOS","PHI","SAS"] },
   { name:"Mike Conley", hints:[
-    "Averaging about 13.5 points per game for his career.",
+    "Averaging about 13.5 points per game for his NBA career.",
     "Attended Ohio State University.",
     "Pick #4, 2007 NBA Draft.",
     "Point Guard.",
@@ -911,7 +945,7 @@ const PLAYERS = [
     "Goes by his own name rather than a separate nickname.",
     "Wears number 11." ] , teams:["MEM","UTA","MIN","BOS"] },
   { name:"Marc Gasol", hints:[
-    "Averaged 13.4 points per game for his career.",
+    "Averaged 13.4 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #48, 2007 NBA Draft.",
     "Center.",
@@ -920,7 +954,7 @@ const PLAYERS = [
     "Nicknamed 'Big Spain'.",
     "Wears number 33." ] , teams:["MEM","TOR","LAL"] },
   { name:"Al Horford", hints:[
-    "Averaging about 12.5 points per game for his career.",
+    "Averaging about 12.5 points per game for his NBA career.",
     "Attended the University of Florida.",
     "Pick #3, 2007 NBA Draft.",
     "Center.",
@@ -929,7 +963,7 @@ const PLAYERS = [
     "Nicknamed 'Big Al'.",
     "Wears number 15." ] , teams:["ATL","BOS","PHI","OKC","BOS"] },
   { name:"Udonis Haslem", hints:[
-    "Averaged 5.3 points per game for his career.",
+    "Averaged 5.3 points per game for his NBA career.",
     "Attended the University of Florida.",
     "Went undrafted in 2002.",
     "Power Forward.",
@@ -938,7 +972,7 @@ const PLAYERS = [
     "Nicknamed 'UD'.",
     "Wears number 40." ] , teams:["MIA"] },
   { name:"Tayshaun Prince", hints:[
-    "Averaged 11.3 points per game for his career.",
+    "Averaged 11.3 points per game for his NBA career.",
     "Attended the University of Kentucky.",
     "Pick #23, 2002 NBA Draft.",
     "Small Forward.",
@@ -947,7 +981,7 @@ const PLAYERS = [
     "Goes by his own name rather than a separate nickname.",
     "Wears number 22." ] , teams:["DET","MEM","BOS","MIN"] },
   { name:"Trevor Ariza", hints:[
-    "Averaged 8.5 points per game for his career.",
+    "Averaged 8.5 points per game for his NBA career.",
     "Attended UCLA.",
     "Pick #43, 2004 NBA Draft.",
     "Small Forward.",
@@ -956,7 +990,7 @@ const PLAYERS = [
     "Goes by his own name rather than a separate nickname.",
     "Wears number 1." ] , teams:["NYK","ORL","LAL","HOU","CHA","WAS","PHX","SAC","POR","MIA"] },
   { name:"Thabo Sefolosha", hints:[
-    "Averaged 6.0 points per game for his career.",
+    "Averaged 6.0 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #13, 2006 NBA Draft.",
     "Shooting Guard.",
@@ -965,7 +999,7 @@ const PLAYERS = [
     "Goes by his own name rather than a separate nickname.",
     "Wears number 25." ] , teams:["OKC","ATL","UTA","HOU"] },
   { name:"Jae Crowder", hints:[
-    "Averaged 9.5 points per game for his career.",
+    "Averaged 9.5 points per game for his NBA career.",
     "Attended Marquette University.",
     "Pick #34, 2012 NBA Draft.",
     "Small Forward.",
@@ -974,7 +1008,7 @@ const PLAYERS = [
     "Goes by his own name rather than a separate nickname.",
     "Wears number 99." ] , teams:["DAL","CLE","BOS","UTA","PHX","MEM","BKN","MIL","MIA"] },
   { name:"Derrick White", hints:[
-    "Averaging about 11.5 points per game for his career.",
+    "Averaging about 11.5 points per game for his NBA career.",
     "Attended the University of Colorado.",
     "Pick #29, 2017 NBA Draft.",
     "Point Guard.",
@@ -1087,6 +1121,42 @@ function renderMisses(){
   });
 }
 
+function celebrate(){
+  const colors = ['#E3A63D','#3E7CB1','#F2EFE6','#4CAF6B'];
+  const container = document.createElement('div');
+  container.className = 'confetti-container';
+  container.setAttribute('aria-hidden','true');
+  for(let i=0;i<30;i++){
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = (Math.random()*100) + 'vw';
+    piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+    piece.style.animationDuration = (2 + Math.random()*1.5) + 's';
+    piece.style.animationDelay = (Math.random()*0.4) + 's';
+    piece.style.setProperty('--rot', (Math.random()*720 - 360) + 'deg');
+    container.appendChild(piece);
+  }
+  document.body.appendChild(container);
+  setTimeout(()=> container.remove(), 4000);
+}
+
+function buildTeamPath(teamCodes){
+  const path=document.createElement('div'); path.className='team-path';
+  teamCodes.forEach((code, idx)=>{
+    if(idx > 0){
+      const arrow=document.createElement('span'); arrow.className='team-arrow';
+      arrow.textContent='→'; arrow.setAttribute('aria-hidden','true');
+      path.appendChild(arrow);
+    }
+    const info = TEAM_INFO[code] || {label:code, bg:'#555', fg:'#fff'};
+    const chip=document.createElement('span'); chip.className='team-chip';
+    chip.textContent = info.label;
+    chip.style.background = info.bg; chip.style.color = info.fg;
+    path.appendChild(chip);
+  });
+  return path;
+}
+
 function renderHints(){
   hintListEl.innerHTML='';
   for(let i=0;i<8;i++){
@@ -1098,20 +1168,7 @@ function renderHints(){
       if(i === TEAMS_CATEGORY_INDEX && puzzle.teams && puzzle.teams.length){
         text.className='hint-text';
         text.setAttribute('aria-label', puzzle.hints[i]); // keeps it meaningful for screen readers
-        const path=document.createElement('div'); path.className='team-path';
-        puzzle.teams.forEach((code, idx)=>{
-          if(idx > 0){
-            const arrow=document.createElement('span'); arrow.className='team-arrow';
-            arrow.textContent='→'; arrow.setAttribute('aria-hidden','true');
-            path.appendChild(arrow);
-          }
-          const info = TEAM_INFO[code] || {label:code, bg:'#555', fg:'#fff'};
-          const chip=document.createElement('span'); chip.className='team-chip';
-          chip.textContent = info.label;
-          chip.style.background = info.bg; chip.style.color = info.fg;
-          path.appendChild(chip);
-        });
-        text.appendChild(path);
+        text.appendChild(buildTeamPath(puzzle.teams));
       } else {
         text.className='hint-text'; text.textContent=puzzle.hints[i];
       }
@@ -1141,6 +1198,19 @@ function endGame(won, doSync){
   document.getElementById('finalScore').textContent = score;
   document.getElementById('answerName').textContent =
     won ? ("🏀 " + puzzle.name) : ("The answer was " + puzzle.name);
+  if(doSync && won && hintsRevealed <= 4) celebrate();
+
+  // Reveal card: team path recap, accented with their most recent team's color, plus a profile link.
+  const revealTeamPath = document.getElementById('revealTeamPath');
+  revealTeamPath.innerHTML = '';
+  if(puzzle.teams && puzzle.teams.length){
+    revealTeamPath.appendChild(buildTeamPath(puzzle.teams));
+    const latest = TEAM_INFO[puzzle.teams[puzzle.teams.length - 1]];
+    if(latest) document.getElementById('revealCard').style.borderLeftColor = latest.bg;
+  }
+  document.getElementById('revealProfileLink').href =
+    'https://en.wikipedia.org/wiki/' + encodeURIComponent(puzzle.name.replace(/ /g, '_'));
+
   resultCard.style.display = 'block';
   document.getElementById('adMid').classList.add('show');
   if(doSync) resultCard.scrollIntoView({behavior:'smooth', block:'start'});
@@ -1261,6 +1331,88 @@ document.getElementById('shareBtn').addEventListener('click', ()=>{
   const btn = document.getElementById('shareBtn');
   const old = btn.textContent; btn.textContent='Copied!';
   setTimeout(()=>btn.textContent=old, 1500);
+});
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+async function generateShareImage(){
+  const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+  const W = 600, H = 600;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  try{
+    await Promise.all([
+      document.fonts.load('700 46px "Barlow Condensed"'),
+      document.fonts.load('500 18px "Manrope"'),
+      document.fonts.load('700 72px "Barlow Condensed"')
+    ]);
+  }catch(e){}
+
+  ctx.fillStyle = '#0B0E14';
+  ctx.fillRect(0,0,W,H);
+  ctx.textAlign = 'center';
+
+  ctx.fillStyle = '#F2EFE6';
+  ctx.font = '700 46px "Barlow Condensed", sans-serif';
+  ctx.fillText('THE HOOP TEST', W/2, 90);
+
+  ctx.fillStyle = '#8891A3';
+  ctx.font = '500 18px "Manrope", sans-serif';
+  ctx.fillText(todayKey, W/2, 122);
+
+  const used = saved.hintsRevealed || 8;
+  const boxSize = 46, gap = 10, totalW = boxSize*8 + gap*7;
+  const startX = (W - totalW) / 2, gridY = 175;
+  for(let i=0;i<8;i++){
+    ctx.fillStyle = i < used ? '#E3A63D' : '#232A3E';
+    roundRect(ctx, startX + i*(boxSize+gap), gridY, boxSize, boxSize, 8);
+    ctx.fill();
+  }
+
+  ctx.fillStyle = '#E3A63D';
+  ctx.font = '700 72px "Barlow Condensed", sans-serif';
+  ctx.fillText(String(saved.score||0), W/2, 340);
+  ctx.fillStyle = '#8891A3';
+  ctx.font = '500 16px "Manrope", sans-serif';
+  ctx.fillText('FINAL SCORE', W/2, 368);
+
+  ctx.fillStyle = '#3E7CB1';
+  ctx.font = '500 16px "Manrope", sans-serif';
+  ctx.fillText(SITE_URL ? SITE_URL.replace(/^https?:\/\//,'') : 'The Hoop Test', W/2, H-40);
+
+  return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+}
+
+document.getElementById('shareImageBtn').addEventListener('click', async ()=>{
+  const btn = document.getElementById('shareImageBtn');
+  const old = btn.textContent;
+  btn.textContent = 'Generating…';
+  btn.disabled = true;
+  try{
+    const blob = await generateShareImage();
+    const file = new File([blob], 'hoop-test-result.png', {type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({files:[file], title:'The Hoop Test', text:'My Hoop Test result'});
+    } else {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'hoop-test-result.png';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=> URL.revokeObjectURL(url), 2000);
+    }
+  }catch(e){ /* user cancelled share, or canvas/share unsupported — fail quietly */ }
+  btn.textContent = old;
+  btn.disabled = false;
 });
 
 let localRecord = null;

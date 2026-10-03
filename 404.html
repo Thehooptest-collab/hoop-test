@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Page Not Found — The Hoop Test</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#0B0E14">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --court:#0B0E14; --court2:#131826; --line:#232A3E;
+  --ball:#E3A63D; --net:#F2EFE6; --net-dim:#8891A3;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;}
+html,body{height:100%;margin:0;}
+body{
+  display:flex;align-items:center;justify-content:center;min-height:100%;
+  background:var(--court);color:var(--net);font-family:'Manrope',sans-serif;
+  text-align:center;padding:24px;
+}
+.wrap{max-width:420px;}
+.ball-icon{width:88px;height:88px;margin:0 auto 20px;}
+h1{
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:40px;
+  margin:0 0 8px;letter-spacing:.5px;
+}
+h1 span{color:var(--ball);}
+p{color:var(--net-dim);font-size:15px;line-height:1.6;margin:0 0 24px;}
+a.btn{
+  display:inline-block;background:var(--ball);color:#231502;
+  font-weight:600;font-size:14px;padding:12px 22px;border-radius:7px;
+  text-decoration:none;
+}
+a.btn:hover{background:#edb75c;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <img class="ball-icon" src="/icon-512.png" alt="" aria-hidden="true">
+  <h1>AIR<span>BALL</span></h1>
+  <p>That's a swing and a miss — this page doesn't exist. Maybe it got traded to another franchise.</p>
+  <a class="btn" href="/">Back to today's puzzle</a>
+</div>
+</body>
+</html>
