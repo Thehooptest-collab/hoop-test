@@ -108,7 +108,18 @@ button:disabled{opacity:.4;cursor:not-allowed;}
 .miss-pips{display:flex;gap:4px;}
 .miss-pip{width:9px;height:9px;border-radius:50%;background:var(--line);}
 .miss-pip.spent{background:var(--miss);}
-.guess-row{display:flex;gap:8px;margin-top:6px;}
+.guess-row{display:flex;gap:8px;margin-top:6px;position:relative;}
+.suggestions-list{
+  display:none;position:absolute;top:calc(100% + 4px);left:0;right:0;
+  background:var(--court2);border:1px solid var(--line);border-radius:7px;
+  max-height:220px;overflow-y:auto;z-index:30;list-style:none;margin:0;padding:4px;
+  box-shadow:0 6px 16px rgba(0,0,0,.4);
+}
+.suggestions-list.show{display:block;}
+.suggestions-list li{
+  padding:9px 10px;border-radius:5px;cursor:pointer;font-size:14px;color:var(--net);
+}
+.suggestions-list li:hover,.suggestions-list li.active{background:var(--line);}
 input[type=text]{
   flex:1;background:var(--court);border:1px solid var(--line);
   border-radius:7px;padding:12px;color:var(--net);font-size:15px;
@@ -264,14 +275,15 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
     </div>
     <div class="guess-row">
       <label for="guessInput" class="visually-hidden">Guess the player's name</label>
-      <input type="text" id="guessInput" list="playerList" placeholder="Type a player name…" autocomplete="off">
+      <input type="text" id="guessInput" placeholder="Type a player name…" autocomplete="off"
+             role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="guessSuggestions">
       <button class="btn-guess" id="guessBtn">Guess</button>
+      <ul id="guessSuggestions" class="suggestions-list" role="listbox" aria-label="Matching player names"></ul>
     </div>
     <div class="guess-meta">
       <span id="missLabel">3 wrong guesses left</span>
       <div class="miss-pips" id="missPips" aria-hidden="true"></div>
     </div>
-    <datalist id="playerList"></datalist>
 
     <div class="status" id="statusBox" role="status" aria-live="polite"></div>
   </div>
@@ -319,13 +331,13 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
     <h4>Who is this game for?</h4>
     <p>Anyone who likes basketball trivia, from casual fans to hardcore NBA historians. The difficulty scales naturally, since the first hint is always the vaguest and later ones get progressively more specific.</p>
 
-    <!-- Uses the same email you set in privacy-policy.html / terms-of-use.html — replace YOUR-EMAIL-HERE in all three places once you pick one. -->
+    <!-- Contact email set below; also appears in privacy-policy.html and terms-of-use.html. -->
     <p class="about-links">
       <a href="/privacy-policy.html">Privacy policy</a>
       &nbsp;·&nbsp;
       <a href="/terms-of-use.html">Terms of use</a>
       &nbsp;·&nbsp;
-      <a href="mailto:YOUR-EMAIL-HERE?subject=Hoop%20Test%20feedback">Spot a wrong hint? Let us know</a>
+      <a href="mailto:pineappleasparagus@icloud.com?subject=Hoop%20Test%20feedback">Spot a wrong hint? Let us know</a>
     </p>
     <button class="modal-close" id="aboutClose" aria-label="Close about section">Got it</button>
   </div>
@@ -1015,7 +1027,187 @@ const PLAYERS = [
     "Spurs, then the Celtics.",
     "Won an NBA championship.",
     "Goes by his own name rather than a separate nickname.",
-    "Wears number 9." ] , teams:["SAS","BOS"] }
+    "Wears number 9." ] , teams:["SAS","BOS"] },
+  { name:"Tracy McGrady", hints:[
+    "Averaged 19.6 points per game for his NBA career.",
+    "Didn't attend college.",
+    "Pick #9, 1997 NBA Draft.",
+    "Shooting Guard.",
+    "Raptors, Magic, Rockets, Knicks, Pistons, Hawks, and Spurs.",
+    "Won back-to-back NBA scoring titles.",
+    "Nicknamed 'T-Mac'.",
+    "Wears number 1." ] , teams:["TOR","ORL","HOU","NYK","DET","ATL","SAS"] },
+  { name:"Paul Pierce", hints:[
+    "Averaged 19.7 points per game for his NBA career.",
+    "Attended the University of Kansas.",
+    "Pick #10, 1998 NBA Draft.",
+    "Small Forward.",
+    "Celtics, Nets, Wizards, and Clippers.",
+    "Won Finals MVP leading a championship core alongside two other future Hall of Famers.",
+    "Nicknamed 'The Truth'.",
+    "Wears number 34." ] , teams:["BOS","BKN","WAS","LAC"] },
+  { name:"Kevin Love", hints:[
+    "Averaged 17.0 points per game for his NBA career.",
+    "Attended UCLA.",
+    "Pick #5, 2008 NBA Draft.",
+    "Power Forward.",
+    "Timberwolves, then the Cavaliers, the Heat, and the Jazz.",
+    "Won an NBA championship that ended a 52-year title drought for his franchise.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 0." ] , teams:["MIN","CLE","MIA","UTA"] },
+  { name:"Blake Griffin", hints:[
+    "Averaged 19.0 points per game for his NBA career.",
+    "Attended the University of Oklahoma.",
+    "Pick #1, 2009 NBA Draft.",
+    "Power Forward.",
+    "Clippers, Pistons, and Celtics.",
+    "Won Rookie of the Year and a famous Slam Dunk Contest involving a car.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 32." ] , teams:["LAC","DET","BOS"] },
+  { name:"DeMar DeRozan", hints:[
+    "Averaging about 21.5 points per game for his NBA career.",
+    "Attended the University of Southern California.",
+    "Pick #9, 2009 NBA Draft.",
+    "Shooting Guard.",
+    "Raptors, Spurs, Bulls, and Kings.",
+    "Named to multiple All-NBA teams despite rarely attempting three-pointers.",
+    "Nicknamed 'DeMar'.",
+    "Wears number 10." ] , teams:["TOR","SAS","CHI","SAC"] },
+  { name:"Zach Randolph", hints:[
+    "Averaged 17.1 points per game for his NBA career.",
+    "Attended Michigan State University.",
+    "Pick #19, 2001 NBA Draft.",
+    "Power Forward.",
+    "Trail Blazers, Knicks, Clippers, Grizzlies, and Kings.",
+    "Anchored a physical, bruising frontcourt known for its gritty style of play.",
+    "Nicknamed 'Z-Bo'.",
+    "Wears number 50." ] , teams:["POR","NYK","LAC","MEM","SAC"] },
+  { name:"Rajon Rondo", hints:[
+    "Averaged 9.8 points per game for his NBA career.",
+    "Attended the University of Kentucky.",
+    "Pick #21, 2006 NBA Draft.",
+    "Point Guard.",
+    "Celtics, Mavericks, Kings, Bulls, Pelicans, Lakers, Hawks, Clippers, and Cavaliers.",
+    "Won championships with two different franchises.",
+    "Nicknamed 'Rondo'.",
+    "Wears number 9." ] , teams:["BOS","DAL","SAC","CHI","NOP","LAL","ATL","LAC","CLE"] },
+  { name:"Joakim Noah", hints:[
+    "Averaged 8.8 points per game for his NBA career.",
+    "Attended the University of Florida.",
+    "Pick #9, 2007 NBA Draft.",
+    "Center.",
+    "Bulls, Knicks, Grizzlies, and Clippers.",
+    "Won Defensive Player of the Year.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 13." ] , teams:["CHI","NYK","MEM","LAC"] },
+  { name:"Gilbert Arenas", hints:[
+    "Averaged 20.7 points per game for his NBA career.",
+    "Attended the University of Arizona.",
+    "Pick #31, 2001 NBA Draft.",
+    "Point Guard.",
+    "Warriors, Wizards, Magic, and Grizzlies.",
+    "Scored 60 points in a single game.",
+    "Nicknamed 'Agent Zero'.",
+    "Wears number 0." ] , teams:["GSW","WAS","ORL","MEM"] },
+  { name:"Baron Davis", hints:[
+    "Averaged 16.1 points per game for his NBA career.",
+    "Attended UCLA.",
+    "Pick #3, 1999 NBA Draft.",
+    "Point Guard.",
+    "Hornets, Warriors, Clippers, Knicks, and Cavaliers.",
+    "Delivered one of the most iconic dunks in NBA playoff history.",
+    "Nicknamed 'B-Diddy'.",
+    "Wears number 1." ] , teams:["CHA","GSW","LAC","NYK","CLE"] },
+  { name:"Joe Johnson", hints:[
+    "Averaged 16.9 points per game for his NBA career.",
+    "Attended the University of Arkansas.",
+    "Pick #10, 2001 NBA Draft.",
+    "Shooting Guard.",
+    "Celtics, Suns, Hawks, Nets, Heat, Jazz, Rockets, and Pistons.",
+    "Named to seven All-Star teams despite rarely being considered a true superstar.",
+    "Nicknamed 'Joe Jesus' and 'Iso Joe'.",
+    "Wears number 2." ] , teams:["BOS","PHX","ATL","BKN","MIA","UTA","HOU","DET"] },
+  { name:"Andre Iguodala", hints:[
+    "Averaged 11.5 points per game for his NBA career.",
+    "Attended the University of Arizona.",
+    "Pick #9, 2004 NBA Draft.",
+    "Small Forward.",
+    "76ers, Nuggets, Warriors, and Heat.",
+    "Won Finals MVP as a role player rather than his team's leading scorer.",
+    "Nicknamed 'Iggy'.",
+    "Wears number 9." ] , teams:["PHI","DEN","GSW","MIA"] },
+  { name:"Klay Thompson", hints:[
+    "Averaging about 19.5 points per game for his NBA career.",
+    "Attended Washington State University.",
+    "Pick #11, 2011 NBA Draft.",
+    "Shooting Guard.",
+    "Warriors, then the Mavericks, and the Heat.",
+    "Once made 14 three-pointers in a single game, an NBA record at the time.",
+    "Nicknamed 'Klay'.",
+    "Wears number 11." ] , teams:["GSW","DAL","MIA"] },
+  { name:"Bradley Beal", hints:[
+    "Averaging about 22.0 points per game for his NBA career.",
+    "Attended the University of Florida.",
+    "Pick #3, 2012 NBA Draft.",
+    "Shooting Guard.",
+    "Wizards, then the Suns, and the Clippers.",
+    "Scored a career-high 60 points in a single game, tying a franchise record.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 3." ] , teams:["WAS","PHX","LAC"] },
+  { name:"Jrue Holiday", hints:[
+    "Averaging about 16.0 points per game for his NBA career.",
+    "Attended UCLA.",
+    "Pick #17, 2009 NBA Draft.",
+    "Point Guard.",
+    "76ers, Pelicans, Bucks, Celtics, and Trail Blazers.",
+    "Won championships with two different franchises.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 4." ] , teams:["PHI","NOP","MIL","BOS","POR"] },
+  { name:"Derrick Rose", hints:[
+    "Averaged 17.2 points per game for his NBA career.",
+    "Attended the University of Memphis.",
+    "Pick #1, 2008 NBA Draft.",
+    "Point Guard.",
+    "Bulls, Knicks, Cavaliers, Timberwolves, Pistons, and Grizzlies.",
+    "Became the youngest NBA MVP ever at the time he won it.",
+    "Nicknamed 'Pooh'.",
+    "Wears number 1." ] , teams:["CHI","NYK","CLE","MIN","DET","MEM"] },
+  { name:"Nikola Vucevic", hints:[
+    "Averaging about 17.5 points per game for his NBA career.",
+    "Attended the University of Southern California.",
+    "Pick #16, 2011 NBA Draft.",
+    "Center.",
+    "Magic, then the Bulls, the Celtics, and back to the Magic.",
+    "Named to multiple All-Star teams.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 9." ] , teams:["ORL","CHI","BOS","ORL"] },
+  { name:"Kyle Lowry", hints:[
+    "Averaged 14.0 points per game for his NBA career.",
+    "Attended Villanova University.",
+    "Pick #24, 2006 NBA Draft.",
+    "Point Guard.",
+    "Grizzlies, Rockets, Raptors, Heat, 76ers, and back to the Raptors to retire.",
+    "Won an NBA championship as the floor leader of his franchise's only title team.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 7." ] , teams:["MEM","HOU","TOR","MIA","PHI","TOR"] },
+  { name:"Jimmy Butler", hints:[
+    "Averaging about 18.0 points per game for his NBA career.",
+    "Attended Marquette University.",
+    "Pick #30, 2011 NBA Draft.",
+    "Small Forward.",
+    "Bulls, Timberwolves, 76ers, Heat, and Warriors.",
+    "Led a star-less roster to the NBA Finals as the clear best player on the floor.",
+    "Nicknamed 'Jimmy Buckets'.",
+    "Wears number 22." ] , teams:["CHI","MIN","PHI","MIA","GSW"] },
+  { name:"Donovan Mitchell", hints:[
+    "Averaging about 25.0 points per game for his NBA career.",
+    "Attended the University of Louisville.",
+    "Pick #13, 2017 NBA Draft.",
+    "Shooting Guard.",
+    "Jazz, then the Cavaliers.",
+    "Won the Slam Dunk Contest as a rookie.",
+    "Nicknamed 'Spida'.",
+    "Wears number 45." ] , teams:["UTA","CLE"] }
 ];
 
 const SCORE_TABLE = {1:100,2:90,3:80,4:70,5:60,6:45,7:30,8:15};
@@ -1084,10 +1276,7 @@ try{
 document.getElementById('dateLabel').textContent =
   new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
 
-const dl = document.getElementById('playerList');
-PLAYERS.forEach(p=>{
-  const o=document.createElement('option'); o.value=p.name; dl.appendChild(o);
-});
+const ALL_PLAYER_NAMES = PLAYERS.map(p => p.name);
 
 let hintsRevealed = 1;
 let finished = false;
@@ -1258,12 +1447,14 @@ function submitGuess(){
   if(!val) return;
   if(isCorrectGuess(val, puzzle.name)){
     showStatus('Nailed it.', 'right');
+    hideSuggestions();
     endGame(true);
     return;
   }
   missesUsed++;
   renderMisses();
   guessInput.value = '';
+  hideSuggestions();
   if(missesUsed >= MAX_MISSES){
     showStatus("That's your last guess used up.", 'wrong');
     endGame(false);
@@ -1275,6 +1466,44 @@ function submitGuess(){
 }
 guessBtn.addEventListener('click', submitGuess);
 guessInput.addEventListener('keydown', e=>{ if(e.key==='Enter') submitGuess(); });
+
+// Suggestions dropdown: stays hidden until the player actually starts typing,
+// and only ever shows names matching what's been typed so far — no browsing
+// the full roster via process of elimination.
+const suggestionsList = document.getElementById('guessSuggestions');
+
+function hideSuggestions(){
+  suggestionsList.classList.remove('show');
+  suggestionsList.innerHTML = '';
+  guessInput.setAttribute('aria-expanded', 'false');
+}
+
+function updateSuggestions(){
+  const val = guessInput.value.trim().toLowerCase();
+  if(!val){ hideSuggestions(); return; }
+  const matches = ALL_PLAYER_NAMES.filter(n => n.toLowerCase().includes(val)).slice(0, 8);
+  if(!matches.length){ hideSuggestions(); return; }
+  suggestionsList.innerHTML = '';
+  matches.forEach(name=>{
+    const li = document.createElement('li');
+    li.textContent = name;
+    li.setAttribute('role', 'option');
+    // mousedown (not click) fires before the input's blur event, so the
+    // selection registers before the dropdown would otherwise disappear.
+    li.addEventListener('mousedown', e=>{
+      e.preventDefault();
+      guessInput.value = name;
+      hideSuggestions();
+    });
+    suggestionsList.appendChild(li);
+  });
+  suggestionsList.classList.add('show');
+  guessInput.setAttribute('aria-expanded', 'true');
+}
+
+guessInput.addEventListener('input', updateSuggestions);
+guessInput.addEventListener('focus', ()=>{ if(guessInput.value.trim()) updateSuggestions(); });
+guessInput.addEventListener('blur', ()=> setTimeout(hideSuggestions, 120));
 
 // Generic accessible modal helper: focus moves in on open, Tab is trapped
 // among the modal's own focusable elements, Escape closes, focus returns to
