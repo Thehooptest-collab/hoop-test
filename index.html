@@ -1465,17 +1465,30 @@ function submitGuess(){
   }
 }
 guessBtn.addEventListener('click', submitGuess);
-guessInput.addEventListener('keydown', e=>{ if(e.key==='Enter') submitGuess(); });
 
 // Suggestions dropdown: stays hidden until the player actually starts typing,
 // and only ever shows names matching what's been typed so far — no browsing
 // the full roster via process of elimination.
 const suggestionsList = document.getElementById('guessSuggestions');
+let activeIndex = -1; // which suggestion (if any) is currently keyboard-highlighted
 
 function hideSuggestions(){
   suggestionsList.classList.remove('show');
   suggestionsList.innerHTML = '';
   guessInput.setAttribute('aria-expanded', 'false');
+  guessInput.removeAttribute('aria-activedescendant');
+  activeIndex = -1;
+}
+
+function setActiveSuggestion(idx){
+  const items = suggestionsList.querySelectorAll('li');
+  if(!items.length) return;
+  items.forEach(li => li.classList.remove('active'));
+  activeIndex = (idx + items.length) % items.length; // wraps both directions
+  const active = items[activeIndex];
+  active.classList.add('active');
+  active.scrollIntoView({block:'nearest'});
+  guessInput.setAttribute('aria-activedescendant', active.id);
 }
 
 function updateSuggestions(){
@@ -1484,9 +1497,11 @@ function updateSuggestions(){
   const matches = ALL_PLAYER_NAMES.filter(n => n.toLowerCase().includes(val)).slice(0, 8);
   if(!matches.length){ hideSuggestions(); return; }
   suggestionsList.innerHTML = '';
-  matches.forEach(name=>{
+  activeIndex = -1;
+  matches.forEach((name, i)=>{
     const li = document.createElement('li');
     li.textContent = name;
+    li.id = 'suggestion-' + i;
     li.setAttribute('role', 'option');
     // mousedown (not click) fires before the input's blur event, so the
     // selection registers before the dropdown would otherwise disappear.
@@ -1504,6 +1519,22 @@ function updateSuggestions(){
 guessInput.addEventListener('input', updateSuggestions);
 guessInput.addEventListener('focus', ()=>{ if(guessInput.value.trim()) updateSuggestions(); });
 guessInput.addEventListener('blur', ()=> setTimeout(hideSuggestions, 120));
+
+guessInput.addEventListener('keydown', e=>{
+  const open = suggestionsList.classList.contains('show');
+  if(open && e.key === 'ArrowDown'){ e.preventDefault(); setActiveSuggestion(activeIndex + 1); }
+  else if(open && e.key === 'ArrowUp'){ e.preventDefault(); setActiveSuggestion(activeIndex - 1); }
+  else if(open && e.key === 'Escape'){ hideSuggestions(); }
+  else if(e.key === 'Enter'){
+    if(open && activeIndex >= 0){
+      e.preventDefault();
+      guessInput.value = suggestionsList.children[activeIndex].textContent;
+      hideSuggestions();
+    } else {
+      submitGuess();
+    }
+  }
+});
 
 // Generic accessible modal helper: focus moves in on open, Tab is trapped
 // among the modal's own focusable elements, Escape closes, focus returns to
