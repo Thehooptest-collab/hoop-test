@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://YOUR-DOMAIN-HERE/</loc>
+    <loc>https://thehooptest.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://YOUR-DOMAIN-HERE/privacy-policy.html</loc>
+    <loc>https://thehooptest.com/privacy-policy.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://YOUR-DOMAIN-HERE/terms-of-use.html</loc>
+    <loc>https://thehooptest.com/terms-of-use.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
