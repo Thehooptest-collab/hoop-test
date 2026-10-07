@@ -167,6 +167,10 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 }
 .footer-note{text-align:center;color:var(--net-dim);font-size:12px;margin-top:18px;}
 .stats-line{display:none;color:var(--net-dim);font-size:13px;margin-top:10px;}
+.countdown-note{margin-top:8px;font-size:13px;color:var(--net-dim);}
+.countdown-note strong{color:var(--ball);font-weight:700;}
+.countdown-note a{color:var(--ball);font-weight:600;text-decoration:none;}
+.countdown-note a:hover{text-decoration:underline;}
 .ad-slot{
   background:var(--court2);border:1px dashed var(--line);border-radius:8px;
   text-align:center;color:var(--net-dim);font-size:12px;
@@ -214,6 +218,19 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 .modal-box ul{padding-left:18px;margin:8px 0;}
 .modal-box .about-links{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);}
 .modal-box .about-links a{color:var(--ball);}
+
+.stats-grid{display:flex;justify-content:space-between;text-align:center;margin:14px 0;gap:4px;}
+.stats-grid .stat-box{flex:1;min-width:0;}
+.stats-grid .stat-num{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:26px;color:var(--net);}
+.stats-grid .stat-label{font-size:10px;color:var(--net-dim);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+.dist-chart{margin-top:6px;}
+.dist-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;font-size:12px;}
+.dist-row .dist-label{width:12px;text-align:right;color:var(--net-dim);flex-shrink:0;}
+.dist-row .dist-bar-wrap{flex:1;background:var(--line);border-radius:4px;overflow:hidden;height:20px;}
+.dist-row .dist-bar{
+  background:var(--ball);height:100%;display:flex;align-items:center;justify-content:flex-end;
+  padding-right:6px;color:#231502;font-weight:700;font-size:11px;min-width:4%;
+}
 .modal-close{
   width:100%;margin-top:16px;background:var(--ball);color:#231502;
 }
@@ -260,6 +277,7 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
     <div class="sub" id="dateLabel">Daily NBA Trivia</div>
     <div class="rim"></div>
     <button id="howToBtn" class="howto-btn">How to play</button>
+    <button id="statsBtn" class="howto-btn">Stats</button>
     <button id="aboutBtn" class="howto-btn">About</button>
   </header>
 
@@ -297,6 +315,7 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
       <a href="#" id="revealProfileLink" target="_blank" rel="noopener noreferrer">View full profile ↗</a>
     </div>
     <div class="stats-line" id="statsLine"></div>
+    <div class="countdown-note" id="countdownTimer"></div>
     <button class="share-btn" id="shareBtn">Copy result</button>
     <button class="share-btn share-btn-outline" id="shareImageBtn">Share image</button>
   </div>
@@ -306,6 +325,17 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 
   <!-- AD RAIL: right. Only appears once today's round ends, so it never distracts during play. -->
   <aside class="ad-rail ad-rail-dynamic" id="adMid" role="complementary" aria-label="Advertisement">Ad space</aside>
+</div>
+
+<div class="modal-backdrop" id="statsModal" role="dialog" aria-modal="true" aria-labelledby="statsTitle">
+  <div class="modal-box">
+    <h2 id="statsTitle">Your stats</h2>
+    <div class="stats-grid" id="statsGrid"></div>
+    <h3>Score distribution</h3>
+    <p style="margin-top:-4px;">Hints used on puzzles you've won.</p>
+    <div class="dist-chart" id="distChart"></div>
+    <button class="modal-close" id="statsClose" aria-label="Close stats">Got it</button>
+  </div>
 </div>
 
 <div class="modal-backdrop" id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
@@ -1407,27 +1437,65 @@ function endGame(won, doSync){
   const record = {hintsRevealed, missesUsed, won, score};
   localStorage.setItem(storageKey, JSON.stringify(record));
   if(doSync){
-    renderStatsLine(updateLocalStats(score));
+    renderStatsLine(updateLocalStats(score, won, hintsRevealed));
   } else {
     renderStatsLine(getLocalStats());
   }
 }
 
 // ---- Local streak/stats (source of truth — works on any host) ----
+const EMPTY_STATS = {games:0,wins:0,totalScore:0,streak:0,maxStreak:0,lastDate:null,dist:[0,0,0,0,0,0,0,0,0]};
 function getLocalStats(){
-  try{ return JSON.parse(localStorage.getItem('hooptest_stats_v1')||'null') || {games:0,totalScore:0,streak:0,lastDate:null}; }
-  catch(e){ return {games:0,totalScore:0,streak:0,lastDate:null}; }
+  try{
+    const s = JSON.parse(localStorage.getItem('hooptest_stats_v1') || 'null');
+    if(s) return Object.assign({}, EMPTY_STATS, s);
+  }catch(e){}
+  return Object.assign({}, EMPTY_STATS);
 }
-function updateLocalStats(score){
+function updateLocalStats(score, won, hints){
   const prev = getLocalStats();
   let streak = prev.streak || 0;
   if(prev.lastDate){
     const diffDays = Math.round((new Date(todayKey) - new Date(prev.lastDate)) / 86400000);
     streak = diffDays === 1 ? streak + 1 : (diffDays === 0 ? streak : 1);
   } else { streak = 1; }
-  const next = { games:(prev.games||0)+1, totalScore:(prev.totalScore||0)+score, streak, lastDate: todayKey };
+  const dist = (prev.dist || EMPTY_STATS.dist).slice();
+  if(won && hints >= 1 && hints <= 8) dist[hints]++;
+  const next = {
+    games: (prev.games || 0) + 1,
+    wins: (prev.wins || 0) + (won ? 1 : 0),
+    totalScore: (prev.totalScore || 0) + score,
+    streak,
+    maxStreak: Math.max(prev.maxStreak || 0, streak),
+    lastDate: todayKey,
+    dist
+  };
   try{ localStorage.setItem('hooptest_stats_v1', JSON.stringify(next)); }catch(e){}
   return next;
+}
+function renderStatsModal(){
+  const s = getLocalStats();
+  const winPct = s.games ? Math.round((s.wins / s.games) * 100) : 0;
+  const avg = s.games ? Math.round(s.totalScore / s.games) : 0;
+  document.getElementById('statsGrid').innerHTML =
+    '<div class="stat-box"><div class="stat-num">' + s.games + '</div><div class="stat-label">Played</div></div>' +
+    '<div class="stat-box"><div class="stat-num">' + winPct + '</div><div class="stat-label">Win %</div></div>' +
+    '<div class="stat-box"><div class="stat-num">' + s.streak + '</div><div class="stat-label">Streak</div></div>' +
+    '<div class="stat-box"><div class="stat-num">' + s.maxStreak + '</div><div class="stat-label">Max streak</div></div>' +
+    '<div class="stat-box"><div class="stat-num">' + avg + '</div><div class="stat-label">Avg score</div></div>';
+
+  const dist = (s.dist && s.dist.length === 9) ? s.dist : EMPTY_STATS.dist;
+  const maxCount = Math.max(1, ...dist.slice(1));
+  const chart = document.getElementById('distChart');
+  chart.innerHTML = '';
+  for(let i = 1; i <= 8; i++){
+    const count = dist[i] || 0;
+    const pct = count > 0 ? Math.max(6, Math.round((count / maxCount) * 100)) : 4;
+    const row = document.createElement('div'); row.className = 'dist-row';
+    row.innerHTML = '<div class="dist-label">' + i + '</div><div class="dist-bar-wrap">' +
+      '<div class="dist-bar" style="width:' + pct + '%">' + (count > 0 ? count : '') + '</div></div>';
+    chart.appendChild(row);
+  }
 }
 function renderStatsLine(s){
   const el = document.getElementById('statsLine');
@@ -1567,10 +1635,25 @@ function setupModal(modalEl, triggerBtn, closeBtn){
   triggerBtn.addEventListener('click', open);
   closeBtn.addEventListener('click', close);
   modalEl.addEventListener('click', e=>{ if(e.target === modalEl) close(); });
+  return {open, close};
 }
 
-setupModal(document.getElementById('howToModal'), document.getElementById('howToBtn'), document.getElementById('howToClose'));
+const howToModalApi = setupModal(document.getElementById('howToModal'), document.getElementById('howToBtn'), document.getElementById('howToClose'));
 setupModal(document.getElementById('aboutModal'), document.getElementById('aboutBtn'), document.getElementById('aboutClose'));
+
+// Stats modal needs its content rebuilt fresh every time it's opened (stats
+// change over time), so render it right before the shared open behavior fires.
+document.getElementById('statsBtn').addEventListener('click', renderStatsModal);
+setupModal(document.getElementById('statsModal'), document.getElementById('statsBtn'), document.getElementById('statsClose'));
+
+// Auto-show How to Play exactly once, for first-time visitors only, after a
+// brief delay so the page isn't instantly covered before it's even visible.
+try{
+  if(!localStorage.getItem('hooptest_seen_howto')){
+    setTimeout(()=> howToModalApi.open(), 500);
+    localStorage.setItem('hooptest_seen_howto', '1');
+  }
+}catch(e){}
 
 // Cookie consent banner
 try{
@@ -1674,6 +1757,35 @@ document.getElementById('shareImageBtn').addEventListener('click', async ()=>{
   btn.textContent = old;
   btn.disabled = false;
 });
+
+// Countdown to the next puzzle (resets at local midnight, matching how
+// today's puzzle itself is selected). Only visible once the result card
+// is shown, but it's harmless to keep ticking in the background otherwise.
+function msUntilNextMidnight(){
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+  return next - now;
+}
+function updateCountdown(){
+  const el = document.getElementById('countdownTimer');
+  if(!el) return;
+  const ms = msUntilNextMidnight();
+  if(ms <= 1000){
+    el.innerHTML = 'New puzzle ready — <a href="#" id="countdownRefresh">refresh →</a>';
+    const link = document.getElementById('countdownRefresh');
+    if(link) link.addEventListener('click', e=>{ e.preventDefault(); location.reload(); });
+    clearInterval(countdownIntervalId);
+    return;
+  }
+  const totalSec = Math.floor(ms / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  const pad = n => String(n).padStart(2, '0');
+  el.innerHTML = 'Next puzzle in <strong>' + h + 'h ' + pad(m) + 'm ' + pad(s) + 's</strong>';
+}
+updateCountdown();
+const countdownIntervalId = setInterval(updateCountdown, 1000);
 
 let localRecord = null;
 try{
