@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head> 
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7632692063432712"
-     crossorigin="anonymous"></script>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Hoop Test — Daily NBA Guessing Game</title>
@@ -249,6 +247,25 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 .cookie-bar a{color:var(--ball);}
 .cookie-bar button{background:var(--ball);color:#231502;padding:8px 16px;}
 
+[hidden]{display:none !important;}
+.archive-back{display:block;margin-top:12px;font-size:13px;font-weight:600;color:var(--ball);text-decoration:none;}
+.archive-back:hover{text-decoration:underline;}
+.modal-top{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.modal-top h2{margin:0;}
+.modal-x{background:transparent;color:var(--net-dim);border:1px solid var(--line);border-radius:20px;padding:5px 12px;font-size:12px;}
+.modal-x:hover{color:var(--net);}
+.archive-list{list-style:none;margin:10px 0 0;padding:0;}
+.archive-list li{border-top:1px solid var(--line);}
+.archive-list a{display:flex;justify-content:space-between;gap:12px;padding:11px 6px;color:var(--net);text-decoration:none;font-size:14px;border-radius:6px;}
+.archive-list a:hover,.archive-list a:focus-visible{background:var(--line);}
+.archive-list .a-main{display:flex;flex-direction:column;min-width:0;}
+.archive-list .a-date{color:var(--net-dim);font-size:12px;}
+.archive-list .a-status{font-weight:700;color:var(--ball);white-space:nowrap;align-self:center;}
+.archive-list .a-status.miss{color:var(--net-dim);}
+.percentile-note{margin-top:12px;font-size:14px;color:var(--net);}
+.link-btn{background:none;border:none;color:var(--ball);padding:0;font:inherit;font-weight:600;cursor:pointer;}
+.link-btn:hover{text-decoration:underline;}
+.dist-row.mine .dist-bar{background:var(--rim);color:#fff;}
 .visually-hidden{
   position:absolute;width:1px;height:1px;padding:0;margin:-1px;
   overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;
@@ -280,7 +297,9 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
     <div class="rim"></div>
     <button id="howToBtn" class="howto-btn">How to play</button>
     <button id="statsBtn" class="howto-btn">Stats</button>
+    <button id="archiveBtn" class="howto-btn">Archive</button>
     <button id="aboutBtn" class="howto-btn">About</button>
+    <a id="archiveBack" class="archive-back" href="./" hidden>← Back to today's puzzle</a>
   </header>
 
   <!-- AD SLOT: top banner. Replace inner content with your AdSense <ins> tag once approved. -->
@@ -317,6 +336,10 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
       <a href="#" id="revealProfileLink" target="_blank" rel="noopener noreferrer">View full profile ↗</a>
     </div>
     <div class="stats-line" id="statsLine"></div>
+    <div class="percentile-note" id="percentileNote" hidden>
+      <span id="percentileText"></span>
+      <button type="button" class="link-btn" id="percentileMore">See how everyone did →</button>
+    </div>
     <div class="countdown-note" id="countdownTimer"></div>
     <button class="share-btn" id="shareBtn">Copy result</button>
     <button class="share-btn share-btn-outline" id="shareImageBtn">Share image</button>
@@ -327,6 +350,24 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 
   <!-- AD RAIL: right. Only appears once today's round ends, so it never distracts during play. -->
   <aside class="ad-rail ad-rail-dynamic" id="adMid" role="complementary" aria-label="Advertisement">Ad space</aside>
+</div>
+
+<div class="modal-backdrop" id="archiveModal" role="dialog" aria-modal="true" aria-labelledby="archiveTitle">
+  <div class="modal-box">
+    <div class="modal-top"><h2 id="archiveTitle">Archive</h2><button class="modal-x" id="archiveClose" aria-label="Close archive">Close</button></div>
+    <p>Missed a day? Play any past puzzle. Archive puzzles don't count toward your streak or stats.</p>
+    <ul class="archive-list" id="archiveList"></ul>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="resultsModal" role="dialog" aria-modal="true" aria-labelledby="resultsTitle">
+  <div class="modal-box">
+    <h2 id="resultsTitle">How everyone did</h2>
+    <p id="resultsSummary"></p>
+    <p style="margin-top:-4px;">Hints used on puzzles that were solved. ✗ means missed.</p>
+    <div class="dist-chart" id="resultsChart"></div>
+    <button class="modal-close" id="resultsClose" aria-label="Close results">Got it</button>
+  </div>
 </div>
 
 <div class="modal-backdrop" id="statsModal" role="dialog" aria-modal="true" aria-labelledby="statsTitle">
@@ -391,14 +432,14 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
       <tr><th scope="row">7 hints</th><td>30 pts</td></tr>
       <tr><th scope="row">8 hints</th><td>15 pts</td></tr>
     </table>
-    <p>You also get <strong>3 wrong guesses</strong> per puzzle — use them up and the round ends. Come back tomorrow for a new player.</p>
+    <p>You also get <strong>3 wrong guesses</strong> per puzzle — use them up and the round ends. Come back tomorrow for a new player, or catch up on a missed day from the Archive.</p>
     <button class="modal-close" id="howToClose" aria-label="Close how-to-play guide">Got it</button>
   </div>
 </div>
 
 <div class="cookie-bar" id="cookieBar">
-  <span>This site uses cookies for ads and basic analytics. <a href="/privacy-policy.html">Privacy policy</a></span>
-  <button id="cookieOk" aria-label="Accept cookie notice">Got it</button>
+  <span>This site saves your progress in your browser and sends anonymous scores to show how you compare. <a href="/privacy-policy.html">Privacy policy</a></span>
+  <button id="cookieOk" aria-label="Dismiss notice">Got it</button>
 </div>
 
 <script defer src="/_vercel/insights/script.js"></script>
@@ -924,7 +965,7 @@ const PLAYERS = [
     "Celtics, then the Grizzlies, then the Pelicans.",
     "Named to the NBA All-Defensive Team multiple times.",
     "Nicknamed 'The Grindfather'.",
-    "Wears number 9." ] , teams:["BOS","MEM","NOP"] },
+    "Wears number 9." ] , teams:["BOS","MEM","NOP"], wiki:"Tony_Allen_(basketball)" },
   { name:"Robert Horry", hints:[
     "Averaged 7.0 points per game for his NBA career.",
     "Attended the University of Alabama.",
@@ -987,7 +1028,7 @@ const PLAYERS = [
     "Grizzlies, Jazz, Timberwolves, and now the Celtics.",
     "Won the NBA Sportsmanship Award multiple times.",
     "Goes by his own name rather than a separate nickname.",
-    "Wears number 11." ] , teams:["MEM","UTA","MIN","BOS"] },
+    "Wears number 11." ] , teams:["MEM","UTA","MIN","BOS"], wiki:"Mike_Conley_Jr." },
   { name:"Marc Gasol", hints:[
     "Averaged 13.4 points per game for his NBA career.",
     "Didn't attend college.",
@@ -1239,7 +1280,223 @@ const PLAYERS = [
     "Jazz, then the Cavaliers.",
     "Won the Slam Dunk Contest as a rookie.",
     "Nicknamed 'Spida'.",
-    "Wears number 45." ] , teams:["UTA","CLE"] }
+    "Wears number 45." ] , teams:["UTA","CLE"] },
+  { name:"Pau Gasol", hints:[
+    "Averaged 17.0 points per game for his NBA career.",
+    "Didn't attend college.",
+    "Pick #3, 2001 NBA Draft.",
+    "Power Forward.",
+    "Grizzlies, Lakers, Bulls, Spurs, and Bucks.",
+    "Won back-to-back championships alongside a legendary scoring guard.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wore number 16." ] , teams:["MEM","LAL","CHI","SAS","MIL"] },
+  { name:"Chauncey Billups", hints:[
+    "Averaged 15.2 points per game for his NBA career.",
+    "Attended the University of Colorado.",
+    "Pick #3, 1997 NBA Draft.",
+    "Point Guard.",
+    "Celtics, Raptors, Nuggets, Timberwolves, Pistons, back to the Nuggets, then the Knicks, Clippers, and a final stint back with the Pistons.",
+    "Won Finals MVP in an upset over a heavily favored superstar team.",
+    "Nicknamed 'Mr. Big Shot'.",
+    "Wore number 1." ] , teams:["BOS","TOR","DEN","MIN","DET","DEN","NYK","LAC","DET"] },
+  { name:"Ben Wallace", hints:[
+    "Averaged 5.7 points per game for his NBA career.",
+    "Attended Virginia Union University.",
+    "Went undrafted in 1996.",
+    "Center.",
+    "Wizards, Magic, Pistons, Bulls, Cavaliers, and back to the Pistons.",
+    "Won Defensive Player of the Year four times.",
+    "Nicknamed 'Big Ben'.",
+    "Wore number 3." ] , teams:["WAS","ORL","DET","CHI","CLE","DET"], wiki:"Ben_Wallace_(basketball)" },
+  { name:"Tim Hardaway", hints:[
+    "Averaged 17.7 points per game for his NBA career.",
+    "Attended the University of Texas at El Paso.",
+    "Pick #14, 1989 NBA Draft.",
+    "Point Guard.",
+    "Warriors, then the Heat, Mavericks, Nuggets, and Pacers.",
+    "Part of a high-scoring trio nicknamed for the initials of its three members.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wore number 10." ] , teams:["GSW","MIA","DAL","DEN","IND"] },
+  { name:"Kevin McHale", hints:[
+    "Averaged 17.9 points per game for his NBA career.",
+    "Attended the University of Minnesota.",
+    "Pick #3, 1980 NBA Draft.",
+    "Power Forward.",
+    "Played his entire career for the Boston Celtics.",
+    "Won three championships and two Sixth Man of the Year awards.",
+    "Nicknamed 'The Black Hole'.",
+    "Wore number 32." ] , teams:["BOS"], wiki:"Kevin_McHale_(basketball)" },
+  { name:"James Worthy", hints:[
+    "Averaged 17.6 points per game for his NBA career.",
+    "Attended the University of North Carolina.",
+    "Pick #1, 1982 NBA Draft.",
+    "Small Forward.",
+    "Played his entire career for the Los Angeles Lakers.",
+    "Won Finals MVP after a Game 7 triple-double.",
+    "Nicknamed 'Big Game James'.",
+    "Wore number 42." ] , teams:["LAL"] },
+  { name:"Gary Payton", hints:[
+    "Averaged 16.3 points per game for his NBA career.",
+    "Attended Oregon State University.",
+    "Pick #2, 1990 NBA Draft.",
+    "Point Guard.",
+    "Sonics, Bucks, Lakers, Celtics, and Heat.",
+    "Won Defensive Player of the Year as a point guard.",
+    "Nicknamed 'The Glove'.",
+    "Wore number 20." ] , teams:["SEA","MIL","LAL","BOS","MIA"] },
+  { name:"Alonzo Mourning", hints:[
+    "Averaged 17.1 points per game for his NBA career.",
+    "Attended Georgetown University.",
+    "Pick #2, 1992 NBA Draft.",
+    "Center.",
+    "Hornets, Heat, Nets, and back to the Heat.",
+    "Won two Defensive Player of the Year awards, then a championship after a kidney transplant.",
+    "Nicknamed 'Zo'.",
+    "Wore number 33." ] , teams:["CHA","MIA","BKN","MIA"] },
+  { name:"Penny Hardaway", hints:[
+    "Averaged 15.2 points per game for his NBA career.",
+    "Attended the University of Memphis.",
+    "Pick #3, 1993 NBA Draft.",
+    "Point Guard.",
+    "Magic, Suns, Knicks, and Heat.",
+    "Led his team to the NBA Finals in his second season alongside a dominant center.",
+    "Goes by a childhood nickname instead of his given first name, Anfernee.",
+    "Wore number 1." ] , teams:["ORL","PHX","NYK","MIA"] },
+  { name:"Chris Webber", hints:[
+    "Averaged 20.7 points per game for his NBA career.",
+    "Attended the University of Michigan.",
+    "Pick #1, 1993 NBA Draft.",
+    "Power Forward.",
+    "Warriors, Wizards (then called the Bullets), Kings, 76ers, Pistons, and back to the Warriors.",
+    "Made five All-Star teams, and famously called a timeout his team didn't have in a national title game.",
+    "Nicknamed 'C-Webb'.",
+    "Wore number 4." ] , teams:["GSW","WAS","SAC","PHI","DET","GSW"] },
+  { name:"Manu Ginobili", hints:[
+    "Averaged 13.3 points per game for his NBA career.",
+    "Didn't attend college.",
+    "Pick #57, 1999 NBA Draft.",
+    "Shooting Guard.",
+    "Played his entire career for the San Antonio Spurs.",
+    "Won four championships and a Sixth Man of the Year award.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wore number 20." ] , teams:["SAS"] },
+  { name:"Tony Parker", hints:[
+    "Averaged 15.5 points per game for his NBA career.",
+    "Didn't attend college.",
+    "Pick #28, 2001 NBA Draft.",
+    "Point Guard.",
+    "Spurs for nearly his whole career, with a final season on the Hornets.",
+    "Won Finals MVP and four championships.",
+    "Nicknamed 'TP'.",
+    "Wore number 9." ] , teams:["SAS","CHA"] },
+  { name:"Lamar Odom", hints:[
+    "Averaged 13.3 points per game for his NBA career.",
+    "Attended the University of Rhode Island.",
+    "Pick #4, 1999 NBA Draft.",
+    "Power Forward.",
+    "Clippers, Heat, Lakers, Mavericks, and back to the Clippers.",
+    "Won two championships and Sixth Man of the Year.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wore number 7." ] , teams:["LAC","MIA","LAL","DAL","LAC"] },
+  { name:"Amar'e Stoudemire", hints:[
+    "Averaged 18.9 points per game for his NBA career.",
+    "Didn't attend college.",
+    "Pick #9, 2002 NBA Draft.",
+    "Power Forward.",
+    "Suns, Knicks, Mavericks, and Heat.",
+    "Won Rookie of the Year and made six All-Star teams.",
+    "Nicknamed 'STAT'.",
+    "Wore number 32 and number 1." ] , teams:["PHX","NYK","DAL","MIA"] },
+  { name:"Jason Kidd", hints:[
+    "Averaged 12.6 points per game for his NBA career.",
+    "Attended the University of California.",
+    "Pick #2, 1994 NBA Draft.",
+    "Point Guard.",
+    "Mavericks, Suns, Nets, back to the Mavericks, and then the Knicks.",
+    "Made ten All-Star teams and won a championship late in his career.",
+    "Nicknamed 'J-Kidd'.",
+    "Wore number 5." ] , teams:["DAL","PHX","BKN","DAL","NYK"] },
+  { name:"Jamal Crawford", hints:[
+    "Averaged 14.6 points per game for his NBA career.",
+    "Attended the University of Michigan.",
+    "Pick #8, 2000 NBA Draft.",
+    "Shooting Guard.",
+    "Bulls, Knicks, Warriors, Hawks, Trail Blazers, Clippers, Timberwolves, Suns, and Nets.",
+    "Won Sixth Man of the Year three times, an NBA record.",
+    "Nicknamed 'J-Crossover'.",
+    "Wore number 11." ] , teams:["CHI","NYK","GSW","ATL","POR","LAC","MIN","PHX","BKN"] },
+  { name:"Dikembe Mutombo", hints:[
+    "Averaged 9.8 points per game for his NBA career.",
+    "Attended Georgetown University.",
+    "Pick #4, 1991 NBA Draft.",
+    "Center.",
+    "Nuggets, Hawks, 76ers, Nets, Knicks, and Rockets.",
+    "Won Defensive Player of the Year four times.",
+    "Nicknamed 'Mount Mutombo'.",
+    "Wore number 55." ] , teams:["DEN","ATL","PHI","BKN","NYK","HOU"] },
+  { name:"Jaylen Brown", hints:[
+    "Averaging about 20.0 points per game for his NBA career.",
+    "Attended the University of California.",
+    "Pick #3, 2016 NBA Draft.",
+    "Shooting Guard.",
+    "Celtics for his first 10 seasons, then the 76ers.",
+    "Won Finals MVP as his team ended a 16-year title drought.",
+    "Goes by his own name rather than a separate nickname.",
+    "Has worn number 7 for most of his career." ] , teams:["BOS","PHI"] },
+  { name:"Bam Adebayo", hints:[
+    "Averaging about 15.5 points per game for his NBA career.",
+    "Attended the University of Kentucky.",
+    "Pick #14, 2017 NBA Draft.",
+    "Center.",
+    "Has played his entire career for the Miami Heat.",
+    "Won two Olympic gold medals with Team USA.",
+    "Goes by 'Bam' instead of his given first name, Edrice.",
+    "Wears number 13." ] , teams:["MIA"] },
+  { name:"Pascal Siakam", hints:[
+    "Averaging about 18.0 points per game for his NBA career.",
+    "Attended New Mexico State University.",
+    "Pick #27, 2016 NBA Draft.",
+    "Power Forward.",
+    "Raptors, then the Pacers.",
+    "Won an NBA championship and Most Improved Player in the same season.",
+    "Nicknamed 'Spicy P'.",
+    "Wears number 43." ] , teams:["TOR","IND"] },
+  { name:"De'Aaron Fox", hints:[
+    "Averaging about 20.0 points per game for his NBA career.",
+    "Attended the University of Kentucky.",
+    "Pick #5, 2017 NBA Draft.",
+    "Point Guard.",
+    "Kings, then the Spurs.",
+    "Won the NBA's first-ever Clutch Player of the Year award.",
+    "Nicknamed 'Swipa'.",
+    "Wore number 5 for most of his career." ] , teams:["SAC","SAS"] },
+  { name:"Julius Randle", hints:[
+    "Averaging about 19.0 points per game for his NBA career.",
+    "Attended the University of Kentucky.",
+    "Pick #7, 2014 NBA Draft.",
+    "Power Forward.",
+    "Lakers, Pelicans, Knicks, Timberwolves, and now the Nets.",
+    "Won Most Improved Player and made three All-Star teams.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 30." ] , teams:["LAL","NOP","NYK","MIN","BKN"] },
+  { name:"Domantas Sabonis", hints:[
+    "Averaging about 16.5 points per game for his NBA career.",
+    "Attended Gonzaga University.",
+    "Pick #11, 2016 NBA Draft.",
+    "Center.",
+    "Thunder, then the Pacers, and now the Kings.",
+    "Led the NBA in rebounds per game.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 11." ] , teams:["OKC","IND","SAC"] },
+  { name:"Zach LaVine", hints:[
+    "Averaging about 20.0 points per game for his NBA career.",
+    "Attended UCLA.",
+    "Pick #13, 2014 NBA Draft.",
+    "Shooting Guard.",
+    "Timberwolves, then the Bulls, and now the Kings.",
+    "Won back-to-back Slam Dunk Contests.",
+    "Goes by his own name rather than a separate nickname.",
+    "Wears number 8." ] , teams:["MIN","CHI","SAC"] }
 ];
 
 const SCORE_TABLE = {1:100,2:90,3:80,4:70,5:60,6:45,7:30,8:15};
@@ -1278,21 +1535,83 @@ function isCorrectGuess(input, answerName){
   return ALIAS_INDEX[answerName].has(norm);
 }
 
-function dayIndexSeed(){
-  const now = new Date();
-  const start = new Date(now.getFullYear(),0,0);
-  const diff = now - start;
-  return Math.floor(diff/86400000);
+// ---------------------------------------------------------------------------
+// LOCKED PUZZLE SCHEDULE. Puzzle #1 was Wednesday, October 7, 2026.
+// Append-only: never reorder, remove, or insert entries, or past puzzle
+// numbers (and the archive and leaderboard built on them) will change.
+// To add players: add them to PLAYERS, then APPEND their names to the end of
+// SCHEDULE. This list runs through puzzle #114 (January 28, 2027); extend it
+// before then, or the list starts over from the top.
+// ---------------------------------------------------------------------------
+const PUZZLE_EPOCH = {y:2026, m:10, d:7};
+const SCHEDULE = [
+  "David Robinson", "Manu Ginobili", "Kevin McHale",
+  "Wilt Chamberlain", "Marcus Smart", "Paul George",
+  "Pascal Siakam", "Kobe Bryant", "Nikola Vucevic",
+  "Giannis Antetokounmpo", "Damian Lillard", "Julius Randle",
+  "Derrick White", "Karl Malone", "Bradley Beal",
+  "Shaquille O'Neal", "Tim Hardaway", "Al Horford",
+  "Joel Embiid", "Dikembe Mutombo", "Vince Carter",
+  "Alonzo Mourning", "Larry Bird", "Jason Kidd",
+  "Dominique Wilkins", "Jaylen Brown", "Trevor Ariza",
+  "Jayson Tatum", "Kawhi Leonard", "De'Aaron Fox",
+  "Devin Booker", "Lamar Odom", "Danny Green",
+  "Chris Paul", "Chauncey Billups", "Bruce Bowen",
+  "Anthony Davis", "Chris Webber", "Stephen Curry",
+  "Gilbert Arenas", "Patrick Ewing", "Scottie Pippen",
+  "Blake Griffin", "Ja Morant", "Andre Iguodala",
+  "Marc Gasol", "Julius Erving", "Ben Wallace",
+  "Clyde Drexler", "Shai Gilgeous-Alexander", "Paul Pierce",
+  "Tayshaun Prince", "Tony Parker", "Kareem Abdul-Jabbar",
+  "Dwyane Wade", "Rajon Rondo", "Thabo Sefolosha",
+  "Zion Williamson", "Pau Gasol", "Zach Randolph",
+  "Dwight Howard", "Steve Nash", "Zach LaVine",
+  "Mike Conley", "Reggie Miller", "Donovan Mitchell",
+  "Kevin Durant", "Tony Allen", "Klay Thompson",
+  "Dirk Nowitzki", "Jrue Holiday", "Allen Iverson",
+  "Luka Doncic", "Penny Hardaway", "Baron Davis",
+  "Magic Johnson", "LeBron James", "Shane Battier",
+  "Amar'e Stoudemire", "Udonis Haslem", "Trae Young",
+  "James Worthy", "Isiah Thomas", "Charles Barkley",
+  "Joakim Noah", "Russell Westbrook", "DeMar DeRozan",
+  "Anthony Edwards", "Derrick Rose", "Jae Crowder",
+  "Tim Duncan", "Kyle Lowry", "Bill Russell",
+  "Jamal Crawford", "Draymond Green", "Michael Jordan",
+  "Carmelo Anthony", "Domantas Sabonis", "John Stockton",
+  "P.J. Tucker", "Kevin Love", "Ray Allen",
+  "Tracy McGrady", "Bam Adebayo", "Chris Bosh",
+  "Robert Horry", "Kevin Garnett", "Gary Payton",
+  "Nikola Jokic", "Joe Johnson", "James Harden",
+  "Jimmy Butler", "Hakeem Olajuwon", "Patrick Beverley",
+];
+
+function dayNumber(y, m, d){ return Math.floor(Date.UTC(y, m - 1, d) / 86400000); }
+function puzzleNumberForDate(dt){
+  const n = dayNumber(dt.getFullYear(), dt.getMonth() + 1, dt.getDate())
+          - dayNumber(PUZZLE_EPOCH.y, PUZZLE_EPOCH.m, PUZZLE_EPOCH.d) + 1;
+  return Math.max(1, n);
 }
-const seed = dayIndexSeed();
-const puzzleIndex = seed % PLAYERS.length;
-const puzzle = PLAYERS[puzzleIndex];
+function playerForPuzzle(n){
+  const name = SCHEDULE[(n - 1) % SCHEDULE.length];
+  return PLAYERS.find(p => p.name === name) || PLAYERS[(n - 1) % PLAYERS.length];
+}
+const latestPuzzleNo = puzzleNumberForDate(new Date());   // today's daily puzzle
+let playingNo = latestPuzzleNo;                            // the puzzle being played right now
+let isArchive = false;
+try{
+  // ?p=N plays an earlier puzzle from the archive. Today's number or anything in the
+  // future (or garbage) falls back to the daily puzzle, so nobody can play ahead.
+  const req = parseInt(new URLSearchParams(location.search).get('p'), 10);
+  if(Number.isInteger(req) && req >= 1 && req < latestPuzzleNo){ playingNo = req; isArchive = true; }
+}catch(e){}
+function dateForPuzzle(n){ return new Date(PUZZLE_EPOCH.y, PUZZLE_EPOCH.m - 1, PUZZLE_EPOCH.d + n - 1); }
+const puzzle = playerForPuzzle(playingNo);
 function localDateKey(d){
   const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
   return y+"-"+m+"-"+day;
 }
 const todayKey = localDateKey(new Date());
-const storageKey = "hooptest_" + todayKey;
+const storageKey = "hooptest_p" + playingNo;   // results are saved per puzzle number
 
 // Testing helper: visiting the page with ?reset at the end of the URL clears
 // today's saved result (both locally and in your account, if signed in) so
@@ -1306,7 +1625,10 @@ try{
 }catch(e){}
 
 document.getElementById('dateLabel').textContent =
-  new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'});
+  '#' + playingNo + ' · ' + dateForPuzzle(playingNo).toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric'}) + (isArchive ? ' · Archive' : '');
+if(isArchive){ document.getElementById('archiveBack').hidden = false; }
+document.querySelector('#resultCard .score-label').textContent = 'PUZZLE #' + playingNo + ' · FINAL SCORE';
+document.title = 'The Hoop Test #' + playingNo + ' — Daily NBA Guessing Game';
 
 const ALL_PLAYER_NAMES = PLAYERS.map(p => p.name);
 
@@ -1430,19 +1752,25 @@ function endGame(won, doSync){
     if(latest) document.getElementById('revealCard').style.borderLeftColor = latest.bg;
   }
   document.getElementById('revealProfileLink').href =
-    'https://en.wikipedia.org/wiki/' + encodeURIComponent(puzzle.name.replace(/ /g, '_'));
+    'https://en.wikipedia.org/wiki/' + encodeURIComponent(puzzle.wiki || puzzle.name.replace(/ /g, '_'));
 
   resultCard.style.display = 'block';
   document.getElementById('adMid').classList.add('show');
   if(doSync) resultCard.scrollIntoView({behavior:'smooth', block:'start'});
   renderMisses();
-  const record = {hintsRevealed, missesUsed, won, score};
+  const prevRec = readSavedRecord(playingNo);
+  const record = {puzzle: playingNo, hintsRevealed, missesUsed, won, score, submitted: !!(prevRec && prevRec.submitted)};
   localStorage.setItem(storageKey, JSON.stringify(record));
-  if(doSync){
+  if(isArchive){
+    const sl = document.getElementById('statsLine');
+    sl.textContent = "Archive puzzle: it doesn't count toward your streak or stats.";
+    sl.style.display = 'block';
+  } else if(doSync){
     renderStatsLine(updateLocalStats(score, won, hintsRevealed));
   } else {
     renderStatsLine(getLocalStats());
   }
+  leaderboardAfterFinish(record);
 }
 
 // ---- Local streak/stats (source of truth — works on any host) ----
@@ -1671,7 +1999,7 @@ document.getElementById('cookieOk').addEventListener('click', ()=>{
 document.getElementById('shareBtn').addEventListener('click', ()=>{
   const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
   const filled = '🟧'.repeat(saved.hintsRevealed||8) + '⬛'.repeat(8-(saved.hintsRevealed||8));
-  const text = `The Hoop Test ${todayKey}\n${filled}\nScore: ${saved.score||0}/100` + (SITE_URL ? `\n${SITE_URL}` : '');
+  const text = `The Hoop Test #${playingNo}${isArchive ? ' (archive)' : ''}\n${filled}\nScore: ${saved.score||0}/100` + (SITE_URL ? `\n${SITE_URL}` : '');
   navigator.clipboard?.writeText(text).catch(()=>{});
   const btn = document.getElementById('shareBtn');
   const old = btn.textContent; btn.textContent='Copied!';
@@ -1713,7 +2041,7 @@ async function generateShareImage(){
 
   ctx.fillStyle = '#8891A3';
   ctx.font = '500 18px "Manrope", sans-serif';
-  ctx.fillText(todayKey, W/2, 122);
+  ctx.fillText('Puzzle #' + playingNo + (isArchive ? ' (archive)' : '') + '  ·  ' + localDateKey(dateForPuzzle(playingNo)), W/2, 122);
 
   const used = saved.hintsRevealed || 8;
   const boxSize = 46, gap = 10, totalW = boxSize*8 + gap*7;
@@ -1760,6 +2088,137 @@ document.getElementById('shareImageBtn').addEventListener('click', async ()=>{
   btn.disabled = false;
 });
 
+// ---------------------------------------------------------------------------
+// Archive + anonymous leaderboard. Everything here fails quietly: if the
+// server isn't set up (or is down), the game works exactly as before.
+// ---------------------------------------------------------------------------
+function readSavedRecord(n){
+  try{ return JSON.parse(localStorage.getItem('hooptest_p' + n) || 'null'); }catch(e){ return null; }
+}
+// Pure: one row of data per puzzle, newest first. getRecord(n) returns a saved result or null.
+function archiveRows(latest, getRecord){
+  const rows = [];
+  for(let n = latest; n >= 1; n--){
+    const rec = getRecord(n);
+    rows.push({ n, isToday: n === latest, done: !!rec, won: !!(rec && rec.won), score: rec ? (rec.score || 0) : null });
+  }
+  return rows;
+}
+function renderArchiveModal(){
+  const list = document.getElementById('archiveList');
+  list.innerHTML = '';
+  archiveRows(latestPuzzleNo, readSavedRecord).forEach(r=>{
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = r.isToday ? './' : ('?p=' + r.n);
+    const main = document.createElement('span'); main.className = 'a-main';
+    const title = document.createElement('span');
+    title.textContent = (r.isToday ? 'Today · ' : '') + '#' + r.n + (r.done ? ' · ' + playerForPuzzle(r.n).name : '');
+    const date = document.createElement('span'); date.className = 'a-date';
+    date.textContent = dateForPuzzle(r.n).toLocaleDateString(undefined, {weekday:'short', month:'short', day:'numeric'});
+    main.appendChild(title); main.appendChild(date);
+    const st = document.createElement('span'); st.className = 'a-status' + (r.done && !r.won ? ' miss' : '');
+    st.textContent = r.done ? (r.won ? r.score + ' pts' : 'Missed') : 'Play →';
+    a.appendChild(main); a.appendChild(st); li.appendChild(a); list.appendChild(li);
+  });
+}
+
+let lastDist = null;
+const MIN_PLAYERS_FOR_PERCENTILE = 20;
+function scoreForField(f){ return f === 'L' ? 0 : (SCORE_TABLE[parseInt(f, 10)] || 0); }
+// Pure: dist maps "1".."8" (hints used on a win) and "L" (missed) to player counts.
+function summarizeDist(dist, myScore){
+  let total = 0, lower = 0, same = 0, wins = 0, low4 = 0;
+  for(const f in dist){
+    const c = parseInt(dist[f], 10) || 0;
+    total += c;
+    const s = scoreForField(f);
+    if(s < myScore) lower += c; else if(s === myScore) same += c;
+    if(f !== 'L'){ wins += c; if(parseInt(f, 10) <= 4) low4 += c; }
+  }
+  return { total, lower, same, wins, low4 };
+}
+function percentileText(sum, myScore, isDaily){
+  if(sum.total < MIN_PLAYERS_FOR_PERCENTILE){
+    return sum.total + ' player' + (sum.total === 1 ? '' : 's') + ' so far. Your percentile appears once ' + MIN_PLAYERS_FOR_PERCENTILE + ' have played.';
+  }
+  if(myScore === 0) return 'Tough one: ' + Math.round(sum.same / sum.total * 100) + '% of players missed it too.';
+  return 'You beat ' + Math.round(sum.lower / sum.total * 100) + '% of players ' + (isDaily ? 'today' : 'on this puzzle') + '.';
+}
+function anonId(){
+  try{
+    let id = localStorage.getItem('hooptest_anon');
+    if(!id){
+      id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+         : 'x' + Math.random().toString(36).slice(2) + Date.now().toString(36) + Math.random().toString(36).slice(2);
+      localStorage.setItem('hooptest_anon', id);
+    }
+    return id;
+  }catch(e){ return null; }
+}
+async function submitScore(record){
+  const id = anonId();
+  if(!id) return false;
+  try{
+    const r = await fetch('/api/scores', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ p: record.puzzle, id, won: !!record.won, hints: record.hintsRevealed })
+    });
+    if(!r.ok) return false;
+    const saved = readSavedRecord(record.puzzle) || record;
+    saved.submitted = true;
+    localStorage.setItem('hooptest_p' + record.puzzle, JSON.stringify(saved));
+    return true;
+  }catch(e){ return false; }
+}
+async function fetchDist(n, fresh){
+  try{
+    const r = await fetch('/api/scores?p=' + n + (fresh ? '&t=' + Date.now() : ''));
+    if(!r.ok) return null;
+    const j = await r.json();
+    return (j && j.dist) ? j.dist : null;
+  }catch(e){ return null; }
+}
+async function leaderboardAfterFinish(record){
+  let justSubmitted = false;
+  if(!isArchive && !record.submitted) justSubmitted = await submitScore(record);
+  const dist = await fetchDist(playingNo, justSubmitted);
+  if(!dist) return;
+  lastDist = dist;
+  const sum = summarizeDist(dist, record.score);
+  document.getElementById('percentileText').textContent = percentileText(sum, record.score, !isArchive);
+  document.getElementById('percentileMore').hidden = sum.total === 0;
+  document.getElementById('percentileNote').hidden = false;
+}
+function renderResultsModal(){
+  document.getElementById('resultsTitle').textContent = 'How everyone did · #' + playingNo;
+  const dist = lastDist || {};
+  const rec = readSavedRecord(playingNo);
+  const mySlot = rec ? (rec.won ? String(rec.hintsRevealed) : 'L') : null;
+  const sum = summarizeDist(dist, rec ? rec.score : 0);
+  document.getElementById('resultsSummary').textContent = sum.total
+    ? sum.total + ' player' + (sum.total === 1 ? '' : 's') + ' · ' + Math.round(sum.low4 / sum.total * 100) + '% solved it in 4 hints or fewer'
+    : 'No results yet.';
+  const chart = document.getElementById('resultsChart');
+  chart.innerHTML = '';
+  const slots = ['1','2','3','4','5','6','7','8','L'];
+  const max = Math.max(1, ...slots.map(s => parseInt(dist[s], 10) || 0));
+  slots.forEach(s=>{
+    const count = parseInt(dist[s], 10) || 0;
+    const pct = count > 0 ? Math.max(6, Math.round(count / max * 100)) : 4;
+    const row = document.createElement('div'); row.className = 'dist-row' + (s === mySlot ? ' mine' : '');
+    const label = document.createElement('div'); label.className = 'dist-label'; label.textContent = s === 'L' ? '✗' : s;
+    const wrap = document.createElement('div'); wrap.className = 'dist-bar-wrap';
+    const bar = document.createElement('div'); bar.className = 'dist-bar'; bar.style.width = pct + '%';
+    bar.textContent = count > 0 ? count : '';
+    wrap.appendChild(bar); row.appendChild(label); row.appendChild(wrap); chart.appendChild(row);
+  });
+}
+document.getElementById('archiveBtn').addEventListener('click', renderArchiveModal);
+setupModal(document.getElementById('archiveModal'), document.getElementById('archiveBtn'), document.getElementById('archiveClose'));
+document.getElementById('percentileMore').addEventListener('click', renderResultsModal);
+setupModal(document.getElementById('resultsModal'), document.getElementById('percentileMore'), document.getElementById('resultsClose'));
+
 // Countdown to the next puzzle (resets at local midnight, matching how
 // today's puzzle itself is selected). Only visible once the result card
 // is shown, but it's harmless to keep ticking in the background otherwise.
@@ -1771,6 +2230,7 @@ function msUntilNextMidnight(){
 function updateCountdown(){
   const el = document.getElementById('countdownTimer');
   if(!el) return;
+  if(isArchive){ if(!el.firstChild) el.innerHTML = '<a href="./">Play the daily puzzle →</a>'; return; }
   const ms = msUntilNextMidnight();
   if(ms <= 1000){
     el.innerHTML = 'New puzzle ready — <a href="#" id="countdownRefresh">refresh →</a>';
