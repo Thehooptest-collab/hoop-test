@@ -262,6 +262,8 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 .archive-list .a-date{color:var(--net-dim);font-size:12px;}
 .archive-list .a-status{font-weight:700;color:var(--ball);white-space:nowrap;align-self:center;}
 .archive-list .a-status.miss{color:var(--net-dim);}
+.fun-fact{margin:12px 0;padding:12px 14px;border-radius:8px;background:var(--court);border:1px dashed var(--line);text-align:left;font-size:14px;line-height:1.5;color:var(--net);}
+.fun-fact-label{display:block;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;color:var(--ball);margin-bottom:2px;}
 .percentile-note{margin-top:12px;font-size:14px;color:var(--net);}
 .link-btn{background:none;border:none;color:var(--ball);padding:0;font:inherit;font-weight:600;cursor:pointer;}
 .link-btn:hover{text-decoration:underline;}
@@ -334,6 +336,10 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
     <div class="reveal-card" id="revealCard">
       <div class="team-path" id="revealTeamPath"></div>
       <a href="#" id="revealProfileLink" target="_blank" rel="noopener noreferrer">View full profile ↗</a>
+    </div>
+    <div class="fun-fact" id="funFact" hidden>
+      <span class="fun-fact-label">Fun fact</span>
+      <span id="funFactText"></span>
     </div>
     <div class="stats-line" id="statsLine"></div>
     <div class="percentile-note" id="percentileNote" hidden>
@@ -471,7 +477,7 @@ const TEAM_INFO = {
 };
 
 const PLAYERS = [
-  { name:"LeBron James", hints:[
+  { name:"LeBron James", fact:"In 2023 he passed Kareem Abdul-Jabbar to become the NBA's all-time leading scorer, and in 2024 he became the first player to reach 40,000 career points.", hints:[
     "Averaging about 27.0 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #1, 2003 NBA Draft.",
@@ -480,7 +486,7 @@ const PLAYERS = [
     "Won championships representing two different conferences.",
     "Nicknamed 'King James'.",
     "Has worn number 23 and number 6." ] , teams:["CLE","MIA","CLE","LAL","PHI"] },
-  { name:"Stephen Curry", hints:[
+  { name:"Stephen Curry", fact:"In 2015-16 he made 402 three-pointers, smashing the NBA's single-season record at the time.", hints:[
     "Averaging about 24.8 points per game for his NBA career.",
     "Attended Davidson College.",
     "Pick #7, 2009 NBA Draft.",
@@ -489,7 +495,7 @@ const PLAYERS = [
     "Won back-to-back MVPs, one of them unanimous.",
     "Known simply as 'Chef' for how he 'cooks' defenders.",
     "Wears number 30." ] , teams:["GSW"] },
-  { name:"Giannis Antetokounmpo", hints:[
+  { name:"Giannis Antetokounmpo", fact:"His brother Thanasis was on the Bucks' 2021 championship team with him, and his brother Kostas won a title with the Lakers in 2020.", hints:[
     "Averaging about 23.5 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #15, 2013 NBA Draft.",
@@ -498,7 +504,7 @@ const PLAYERS = [
     "Won back-to-back MVP awards and later a championship.",
     "Nicknamed 'The Greek Freak'.",
     "Wears number 34." ] , teams:["MIL","MIA"] },
-  { name:"Kevin Durant", hints:[
+  { name:"Kevin Durant", fact:"He has won four Olympic gold medals with Team USA (2012, 2016, 2020, and 2024).", hints:[
     "Averaging about 27.2 points per game for his NBA career.",
     "Attended the University of Texas.",
     "Pick #2, 2007 NBA Draft.",
@@ -507,7 +513,7 @@ const PLAYERS = [
     "Won a scoring title while still in his early 20s.",
     "Known simply by the initials 'KD'.",
     "Has worn number 35 and number 7." ] , teams:["OKC","GSW","BKN","PHX","HOU"] },
-  { name:"Nikola Jokic", hints:[
+  { name:"Nikola Jokic", fact:"His draft selection was announced during a commercial break, and he's a passionate horse racing fan back home in Serbia.", hints:[
     "Averaging about 20.0 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #41, 2014 NBA Draft.",
@@ -516,7 +522,7 @@ const PLAYERS = [
     "Won MVP multiple times and later a championship.",
     "Nicknamed 'The Joker'.",
     "Wears number 15." ] , teams:["DEN"] },
-  { name:"Kobe Bryant", hints:[
+  { name:"Kobe Bryant", fact:"He scored 81 points against the Raptors in 2006, the second-highest single-game total in NBA history behind Wilt Chamberlain's 100.", hints:[
     "Averaged 25.0 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #13, 1996 NBA Draft.",
@@ -525,7 +531,7 @@ const PLAYERS = [
     "Won five championships across two distinct title runs.",
     "Nicknamed 'Black Mamba'.",
     "Wore number 8, then switched to number 24." ] , teams:["LAL"] },
-  { name:"Michael Jordan", hints:[
+  { name:"Michael Jordan", fact:"He didn't make his high school varsity team as a sophomore, then went on to win six championships and six Finals MVP awards.", hints:[
     "Averaged 30.1 points per game for his NBA career.",
     "Attended the University of North Carolina.",
     "Pick #3, 1984 NBA Draft.",
@@ -534,7 +540,7 @@ const PLAYERS = [
     "Never lost an NBA Finals series he played in.",
     "Nicknamed 'Air' and 'His Airness'.",
     "Wore number 23 for nearly his entire career." ] , teams:["CHI","WAS"] },
-  { name:"Luka Doncic", hints:[
+  { name:"Luka Doncic", fact:"At just 19, he won the EuroLeague title and MVP with Real Madrid before ever playing in the NBA.", hints:[
     "Averaging about 28.5 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #3, 2018 NBA Draft.",
@@ -543,7 +549,7 @@ const PLAYERS = [
     "Named the best player in Europe before ever playing an NBA game.",
     "Sometimes called 'Luka Magic'.",
     "Wears number 77." ] , teams:["DAL","LAL"] },
-  { name:"Tim Duncan", hints:[
+  { name:"Tim Duncan", fact:"He grew up as a competitive swimmer in the Virgin Islands until Hurricane Hugo destroyed the pool where he trained in 1989.", hints:[
     "Averaged 19.0 points per game for his NBA career.",
     "Attended Wake Forest University.",
     "Pick #1, 1997 NBA Draft.",
@@ -552,7 +558,7 @@ const PLAYERS = [
     "Won championships in three different decades.",
     "Nicknamed 'The Big Fundamental'.",
     "Wears number 21." ] , teams:["SAS"] },
-  { name:"Shaquille O'Neal", hints:[
+  { name:"Shaquille O'Neal", fact:"He earned a doctorate in education from Barry University in 2012.", hints:[
     "Averaged 23.7 points per game for his NBA career.",
     "Attended Louisiana State University.",
     "Pick #1, 1992 NBA Draft.",
@@ -561,7 +567,7 @@ const PLAYERS = [
     "Won Finals MVP three years in a row.",
     "Has gone by dozens of nicknames, including 'The Big Aristotle'.",
     "Wore number 34 and number 32." ] , teams:["ORL","LAL","MIA","PHX","CLE","BOS"] },
-  { name:"Allen Iverson", hints:[
+  { name:"Allen Iverson", fact:"As a rookie in 1997, he crossed over Michael Jordan in one of the most replayed moments in NBA history.", hints:[
     "Averaged 26.7 points per game for his NBA career.",
     "Attended Georgetown University.",
     "Pick #1, 1996 NBA Draft.",
@@ -570,7 +576,7 @@ const PLAYERS = [
     "Won MVP the same year he led that unlikely Finals run.",
     "Nicknamed 'The Answer'.",
     "Wears number 3." ] , teams:["PHI","DEN","DET","MEM","PHI"] },
-  { name:"Dirk Nowitzki", hints:[
+  { name:"Dirk Nowitzki", fact:"In 2007 he became the first European-born player to win the NBA MVP award.", hints:[
     "Averaged 20.7 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #9, 1998 NBA Draft.",
@@ -579,7 +585,7 @@ const PLAYERS = [
     "Won the NBA MVP award in 2007 and an NBA championship in 2011.",
     "Early on, some called him the 'German Wunderkind'.",
     "Wears number 41." ] , teams:["DAL"] },
-  { name:"Magic Johnson", hints:[
+  { name:"Magic Johnson", fact:"As a rookie in Game 6 of the 1980 Finals, he started at center for an injured Kareem Abdul-Jabbar and scored 42 points.", hints:[
     "Averaged 19.5 points per game for his NBA career.",
     "Attended Michigan State University.",
     "Pick #1, 1979 NBA Draft.",
@@ -588,7 +594,7 @@ const PLAYERS = [
     "Won multiple championships and MVP awards through the 1980s.",
     "Nicknamed 'Magic'.",
     "Wears number 32." ] , teams:["LAL"] },
-  { name:"Larry Bird", hints:[
+  { name:"Larry Bird", fact:"He won three straight Three-Point Contests (1986-88) and reportedly asked the other contestants who was playing for second place.", hints:[
     "Averaged 24.3 points per game for his NBA career.",
     "Attended Indiana State University.",
     "Pick #6, 1978 NBA Draft.",
@@ -597,7 +603,7 @@ const PLAYERS = [
     "Won three consecutive MVP awards in the mid-1980s.",
     "Nicknamed 'The Hick from French Lick'.",
     "Wears number 33." ] , teams:["BOS"] },
-  { name:"Hakeem Olajuwon", hints:[
+  { name:"Hakeem Olajuwon", fact:"He's the only player in NBA history to win MVP, Defensive Player of the Year, and Finals MVP in the same season (1993-94).", hints:[
     "Averaged 21.8 points per game for his NBA career.",
     "Attended the University of Houston.",
     "Pick #1, 1984 NBA Draft.",
@@ -606,7 +612,7 @@ const PLAYERS = [
     "Won back-to-back championships in the mid-1990s.",
     "Nicknamed 'The Dream'.",
     "Wears number 34." ] , teams:["HOU","TOR"] },
-  { name:"Kareem Abdul-Jabbar", hints:[
+  { name:"Kareem Abdul-Jabbar", fact:"He won six MVP awards, more than any other player in NBA history.", hints:[
     "Averaged 24.6 points per game for his NBA career.",
     "Attended UCLA.",
     "Pick #1, 1969 NBA Draft.",
@@ -615,7 +621,7 @@ const PLAYERS = [
     "Retired as the league's all-time leading scorer, a record held for decades.",
     "Changed his name after converting to Islam early in his career.",
     "Wears number 33." ] , teams:["MIL","LAL"] },
-  { name:"Wilt Chamberlain", hints:[
+  { name:"Wilt Chamberlain", fact:"He scored 100 points in a single game in 1962 and averaged 50.4 points per game over that entire season.", hints:[
     "Averaged 30.1 points per game for his NBA career.",
     "Attended the University of Kansas.",
     "Territorial pick, 1959 NBA Draft.",
@@ -624,7 +630,7 @@ const PLAYERS = [
     "Won championships with two different franchises.",
     "Nicknamed 'Wilt the Stilt' and 'The Big Dipper'.",
     "Wears number 13." ] , teams:["GSW","PHI","LAL"] },
-  { name:"Bill Russell", hints:[
+  { name:"Bill Russell", fact:"In 1966 he became the NBA's first Black head coach, leading the Celtics as a player-coach.", hints:[
     "Averaged 15.1 points per game for his NBA career.",
     "Attended the University of San Francisco.",
     "Pick #2, 1956 NBA Draft.",
@@ -633,7 +639,7 @@ const PLAYERS = [
     "Won 11 championships in 13 seasons, a record unlikely ever to be matched.",
     "Has no widely used nickname beyond his own name.",
     "Wears number 6." ] , teams:["BOS"] },
-  { name:"Kevin Garnett", hints:[
+  { name:"Kevin Garnett", fact:"After the Celtics won the 2008 title, he famously screamed 'Anything is possible!' on the court.", hints:[
     "Averaged 17.8 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #5, 1995 NBA Draft.",
@@ -642,7 +648,7 @@ const PLAYERS = [
     "Won his only championship after a trade to a Boston 'Big Three'.",
     "Nicknamed 'The Big Ticket'.",
     "Wears number 21 and number 2." ] , teams:["MIN","BOS","BKN"] },
-  { name:"Dwyane Wade", hints:[
+  { name:"Dwyane Wade", fact:"In the 2006 Finals he averaged 34.7 points as Miami rallied from an 0-2 deficit to beat Dallas.", hints:[
     "Averaged 22.0 points per game for his NBA career.",
     "Attended Marquette University.",
     "Pick #5, 2003 NBA Draft.",
@@ -651,7 +657,7 @@ const PLAYERS = [
     "Won Finals MVP the year his team upset a heavily favored opponent.",
     "Nicknamed 'Flash'.",
     "Wears number 3." ] , teams:["MIA","CHI","CLE","MIA"] },
-  { name:"Vince Carter", hints:[
+  { name:"Vince Carter", fact:"He played 22 seasons across four different decades.", hints:[
     "Averaged 16.7 points per game for his NBA career.",
     "Attended the University of North Carolina.",
     "Pick #5, 1998 NBA Draft.",
@@ -660,7 +666,7 @@ const PLAYERS = [
     "Won a legendary Slam Dunk Contest early in his career.",
     "Nicknamed 'Vinsanity' and 'Half-Man, Half-Amazing'.",
     "Wears number 15." ] , teams:["TOR","BKN","ORL","PHX","DAL","MEM","SAC","ATL"] },
-  { name:"Chris Paul", hints:[
+  { name:"Chris Paul", fact:"In high school he scored 61 points in a game, one for each year of his late grandfather's life.", hints:[
     "Averaging about 17.5 points per game for his NBA career.",
     "Attended Wake Forest University.",
     "Pick #4, 2005 NBA Draft.",
@@ -669,7 +675,7 @@ const PLAYERS = [
     "Led the league in assists and steals multiple times each.",
     "Nicknamed 'CP3'.",
     "Wears number 3." ] , teams:["CHA","LAC","HOU","OKC","PHX","GSW","SAS","LAC","TOR"] },
-  { name:"James Harden", hints:[
+  { name:"James Harden", fact:"In 2018 he recorded the first 60-point triple-double in NBA history.", hints:[
     "Averaging about 24.8 points per game for his NBA career.",
     "Attended Arizona State University.",
     "Pick #3, 2009 NBA Draft.",
@@ -678,7 +684,7 @@ const PLAYERS = [
     "Won MVP after leading the league in scoring.",
     "Nicknamed 'The Beard'.",
     "Wears number 13." ] , teams:["OKC","HOU","BKN","PHI","LAC","CLE"] },
-  { name:"Damian Lillard", hints:[
+  { name:"Damian Lillard", fact:"He also records hip-hop music under the name Dame D.O.L.L.A.", hints:[
     "Averaging about 25.2 points per game for his NBA career.",
     "Attended Weber State University.",
     "Pick #6, 2012 NBA Draft.",
@@ -687,7 +693,7 @@ const PLAYERS = [
     "Won Rookie of the Year.",
     "Nicknamed 'Dame'.",
     "Wears number 0." ] , teams:["POR","MIL","POR"] },
-  { name:"Jayson Tatum", hints:[
+  { name:"Jayson Tatum", fact:"In Game 7 of the 2023 conference semifinals he scored 51 points, the most ever in a Game 7.", hints:[
     "Averaging about 24.0 points per game for his NBA career.",
     "Attended Duke University.",
     "Pick #3, 2017 NBA Draft.",
@@ -696,7 +702,7 @@ const PLAYERS = [
     "Won a championship leading a young core.",
     "Nicknamed 'JT'.",
     "Wears number 0." ] , teams:["BOS"] },
-  { name:"Joel Embiid", hints:[
+  { name:"Joel Embiid", fact:"In January 2024 he scored 70 points against the Spurs, a 76ers franchise record.", hints:[
     "Averaging about 27.5 points per game for his NBA career.",
     "Attended the University of Kansas.",
     "Pick #3, 2014 NBA Draft.",
@@ -705,7 +711,7 @@ const PLAYERS = [
     "Won MVP after leading the league in scoring.",
     "Nicknamed 'The Process'.",
     "Wears number 21." ] , teams:["PHI"] },
-  { name:"Kawhi Leonard", hints:[
+  { name:"Kawhi Leonard", fact:"His 2019 Game 7 buzzer-beater against Philadelphia bounced on the rim four times before dropping.", hints:[
     "Averaging about 20.0 points per game for his NBA career.",
     "Attended San Diego State University.",
     "Pick #15, 2011 NBA Draft.",
@@ -714,7 +720,7 @@ const PLAYERS = [
     "Won Finals MVP with two different franchises.",
     "Nicknamed 'The Klaw'.",
     "Wears number 2." ] , teams:["SAS","TOR","LAC","TOR"] },
-  { name:"Anthony Davis", hints:[
+  { name:"Anthony Davis", fact:"He grew from a guard-sized 6'0\" in early high school to a 6'10\" top recruit by his senior year.", hints:[
     "Averaging about 24.0 points per game for his NBA career.",
     "Attended the University of Kentucky.",
     "Pick #1, 2012 NBA Draft.",
@@ -723,7 +729,7 @@ const PLAYERS = [
     "Won an NBA championship as a second option alongside a superstar teammate.",
     "Nicknamed 'The Brow'.",
     "Wears number 3." ] , teams:["NOP","LAL","DAL","WAS"] },
-  { name:"Devin Booker", hints:[
+  { name:"Devin Booker", fact:"He was the youngest player in NBA history to score 70 points in a game, at age 20.", hints:[
     "Averaging about 24.5 points per game for his NBA career.",
     "Attended the University of Kentucky.",
     "Pick #13, 2015 NBA Draft.",
@@ -732,7 +738,7 @@ const PLAYERS = [
     "Once scored 70 points in a single game.",
     "Nicknamed 'Book'.",
     "Wears number 1." ] , teams:["PHX"] },
-  { name:"Ja Morant", hints:[
+  { name:"Ja Morant", fact:"In 2018-19 at Murray State he became the first Division I player ever to average 20+ points and 10+ assists in a season.", hints:[
     "Averaging about 22.0 points per game for his NBA career.",
     "Attended Murray State University.",
     "Pick #2, 2019 NBA Draft.",
@@ -741,7 +747,7 @@ const PLAYERS = [
     "Won Rookie of the Year.",
     "Goes by his own first name rather than a separate nickname.",
     "Wears number 12." ] , teams:["MEM","POR"] },
-  { name:"Trae Young", hints:[
+  { name:"Trae Young", fact:"In 2017-18 at Oklahoma he became the first Division I player to lead the nation in both scoring and assists.", hints:[
     "Averaging about 25.0 points per game for his NBA career.",
     "Attended the University of Oklahoma.",
     "Pick #5, 2018 NBA Draft.",
@@ -750,7 +756,7 @@ const PLAYERS = [
     "Led the league in assists.",
     "Nicknamed 'Ice Trae'.",
     "Wears number 11." ] , teams:["ATL","WAS"] },
-  { name:"Zion Williamson", hints:[
+  { name:"Zion Williamson", fact:"At Duke in 2019, his sneaker split apart during a game against North Carolina, one of the biggest sports stories of that year.", hints:[
     "Averaging about 23.0 points per game for his NBA career.",
     "Attended Duke University.",
     "Pick #1, 2019 NBA Draft.",
@@ -759,7 +765,7 @@ const PLAYERS = [
     "Went viral in college for his combination of size and athleticism before ever playing an NBA game.",
     "Goes by his own first name rather than a separate nickname.",
     "Wears number 1." ] , teams:["NOP"] },
-  { name:"Anthony Edwards", hints:[
+  { name:"Anthony Edwards", fact:"He's the highest-drafted player in University of Georgia history, going first overall in 2020.", hints:[
     "Averaging about 24.0 points per game for his NBA career.",
     "Attended the University of Georgia.",
     "Pick #1, 2020 NBA Draft.",
@@ -768,7 +774,7 @@ const PLAYERS = [
     "Led Team USA in scoring at the Olympics.",
     "Nicknamed 'Ant-Man'.",
     "Wears number 1." ] , teams:["MIN"] },
-  { name:"Shai Gilgeous-Alexander", hints:[
+  { name:"Shai Gilgeous-Alexander", fact:"He's the first Canadian-born player to win the NBA MVP award.", hints:[
     "Averaging about 25.5 points per game for his NBA career.",
     "Attended the University of Kentucky.",
     "Pick #11, 2018 NBA Draft.",
@@ -777,7 +783,7 @@ const PLAYERS = [
     "Won the NBA MVP award.",
     "Nicknamed 'SGA'.",
     "Wears number 2." ] , teams:["OKC"] },
-  { name:"Paul George", hints:[
+  { name:"Paul George", fact:"He suffered a gruesome leg injury in a 2014 Team USA scrimmage, then came back to win Olympic gold in 2016.", hints:[
     "Averaging about 19.5 points per game for his NBA career.",
     "Attended Fresno State University.",
     "Pick #10, 2010 NBA Draft.",
@@ -786,7 +792,7 @@ const PLAYERS = [
     "Named to an All-NBA First Team multiple times.",
     "Nicknamed 'PG13'.",
     "Wears number 13." ] , teams:["IND","OKC","LAC","PHI","BOS"] },
-  { name:"Russell Westbrook", hints:[
+  { name:"Russell Westbrook", fact:"He averaged a triple-double for the full season four different times, including his 2016-17 MVP year (31.6 points, 10.7 rebounds, 10.4 assists).", hints:[
     "Averaged 21.5 points per game for his NBA career.",
     "Attended UCLA.",
     "Pick #4, 2008 NBA Draft.",
@@ -795,7 +801,7 @@ const PLAYERS = [
     "Won NBA MVP after averaging a triple-double for a full season.",
     "Nicknamed 'Russ' and 'Mr. Triple-Double'.",
     "Wears number 0." ] , teams:["OKC","HOU","WAS","LAL","LAC","DEN","SAC"] },
-  { name:"Carmelo Anthony", hints:[
+  { name:"Carmelo Anthony", fact:"He won three Olympic gold medals with Team USA (2008, 2012, and 2016).", hints:[
     "Averaged 22.5 points per game for his NBA career.",
     "Attended Syracuse University.",
     "Pick #3, 2003 NBA Draft.",
@@ -804,7 +810,7 @@ const PLAYERS = [
     "Won a college championship as a freshman before turning pro.",
     "Nicknamed 'Melo'.",
     "Wears number 7." ] , teams:["DEN","NYK","OKC","HOU","POR","LAL"] },
-  { name:"Dwight Howard", hints:[
+  { name:"Dwight Howard", fact:"He won the 2008 Slam Dunk Contest wearing a Superman cape.", hints:[
     "Averaged 15.7 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #1, 2004 NBA Draft.",
@@ -813,7 +819,7 @@ const PLAYERS = [
     "Won Defensive Player of the Year three times.",
     "Nicknamed 'Superman'.",
     "Wears number 12." ] , teams:["ORL","LAL","HOU","ATL","CHA","WAS","PHI","LAL"] },
-  { name:"Chris Bosh", hints:[
+  { name:"Chris Bosh", fact:"The Heat retired his number 1 jersey in 2019 after health problems ended his career.", hints:[
     "Averaged 19.2 points per game for his NBA career.",
     "Attended Georgia Tech.",
     "Pick #4, 2003 NBA Draft.",
@@ -822,7 +828,7 @@ const PLAYERS = [
     "Won two championships as part of a superstar trio.",
     "Nicknamed 'CB4'.",
     "Wears number 1." ] , teams:["TOR","MIA"] },
-  { name:"Ray Allen", hints:[
+  { name:"Ray Allen", fact:"He was the NBA's all-time leader in three-pointers made until Stephen Curry passed him in 2021.", hints:[
     "Averaged 18.9 points per game for his NBA career.",
     "Attended the University of Connecticut.",
     "Pick #5, 1996 NBA Draft.",
@@ -831,7 +837,7 @@ const PLAYERS = [
     "Hit one of the most famous game-tying shots in Finals history.",
     "Nicknamed 'Jesus Shuttlesworth' after a film role.",
     "Wears number 34." ] , teams:["MIL","SEA","BOS","MIA"] },
-  { name:"Reggie Miller", hints:[
+  { name:"Reggie Miller", fact:"His sister, Cheryl Miller, is also a Basketball Hall of Famer.", hints:[
     "Averaged 18.2 points per game for his NBA career.",
     "Attended UCLA.",
     "Pick #11, 1987 NBA Draft.",
@@ -840,7 +846,7 @@ const PLAYERS = [
     "Famous for a historic fourth-quarter comeback in a playoff game.",
     "Nicknamed 'Knick Killer' by rival fans.",
     "Wears number 31." ] , teams:["IND"] },
-  { name:"Scottie Pippen", hints:[
+  { name:"Scottie Pippen", fact:"He began college as the team's equipment manager at Central Arkansas before growing several inches and earning a scholarship.", hints:[
     "Averaged 16.1 points per game for his NBA career.",
     "Attended the University of Central Arkansas.",
     "Pick #5, 1987 NBA Draft.",
@@ -849,7 +855,7 @@ const PLAYERS = [
     "Won six championships alongside a legendary teammate.",
     "Nicknamed 'Pip'.",
     "Wears number 33." ] , teams:["CHI","HOU","POR","CHI"] },
-  { name:"Patrick Ewing", hints:[
+  { name:"Patrick Ewing", fact:"He won Olympic gold as a player in 1984 and again with the 1992 Dream Team.", hints:[
     "Averaged 21.0 points per game for his NBA career.",
     "Attended Georgetown University.",
     "Pick #1, 1985 NBA Draft.",
@@ -858,7 +864,7 @@ const PLAYERS = [
     "Never won a championship despite a Hall of Fame career.",
     "Doesn't go by a widely used nickname beyond his own name.",
     "Wears number 33." ] , teams:["NYK","SEA","ORL"] },
-  { name:"Charles Barkley", hints:[
+  { name:"Charles Barkley", fact:"After retiring he became one of basketball's best-known TV analysts on the show Inside the NBA.", hints:[
     "Averaged 22.1 points per game for his NBA career.",
     "Attended Auburn University.",
     "Pick #5, 1984 NBA Draft.",
@@ -867,7 +873,7 @@ const PLAYERS = [
     "Won NBA MVP despite standing shorter than most players at his position.",
     "Nicknamed 'Sir Charles' and 'The Round Mound of Rebound'.",
     "Wears number 34." ] , teams:["PHI","PHX","HOU"] },
-  { name:"Karl Malone", hints:[
+  { name:"Karl Malone", fact:"He and John Stockton played together for 18 seasons in Utah, one of the longest-running duos in NBA history.", hints:[
     "Averaged 25.0 points per game for his NBA career.",
     "Attended Louisiana Tech University.",
     "Pick #13, 1985 NBA Draft.",
@@ -876,7 +882,7 @@ const PLAYERS = [
     "Retired as the second all-time leading scorer in league history at the time.",
     "Nicknamed 'The Mailman'.",
     "Wears number 32." ] , teams:["UTA","LAL"] },
-  { name:"John Stockton", hints:[
+  { name:"John Stockton", fact:"In 1990-91 he averaged 14.5 assists per game, the highest single-season average in NBA history.", hints:[
     "Averaged 13.1 points per game for his NBA career.",
     "Attended Gonzaga University.",
     "Pick #16, 1984 NBA Draft.",
@@ -885,7 +891,7 @@ const PLAYERS = [
     "Retired as the all-time leader in both assists and steals.",
     "Known for short shorts and a low profile off the court rather than a nickname.",
     "Wears number 12." ] , teams:["UTA"] },
-  { name:"Clyde Drexler", hints:[
+  { name:"Clyde Drexler", fact:"He and Hakeem Olajuwon were college teammates at Houston ('Phi Slama Jama'), then reunited to win the 1995 title with the Rockets.", hints:[
     "Averaged 20.4 points per game for his NBA career.",
     "Attended the University of Houston.",
     "Pick #14, 1983 NBA Draft.",
@@ -894,7 +900,7 @@ const PLAYERS = [
     "Won a championship after being traded back to his hometown team.",
     "Nicknamed 'Clyde the Glide'.",
     "Wears number 22." ] , teams:["POR","HOU"] },
-  { name:"Isiah Thomas", hints:[
+  { name:"Isiah Thomas", fact:"In Game 6 of the 1988 Finals he scored 25 points in a single quarter on a badly sprained ankle, a Finals record.", hints:[
     "Averaged 19.2 points per game for his NBA career.",
     "Attended Indiana University.",
     "Pick #2, 1981 NBA Draft.",
@@ -903,7 +909,7 @@ const PLAYERS = [
     "Won back-to-back championships leading a physical, defense-first team.",
     "Nicknamed 'Zeke'.",
     "Wears number 11." ] , teams:["DET"] },
-  { name:"Julius Erving", hints:[
+  { name:"Julius Erving", fact:"In the 1976 ABA Slam Dunk Contest, he took off from the free-throw line.", hints:[
     "Averaged about 22.0 points per game across his NBA career.",
     "Attended the University of Massachusetts.",
     "Pick #12, 1972 NBA Draft.",
@@ -912,7 +918,7 @@ const PLAYERS = [
     "Won championships in both the ABA and NBA.",
     "Nicknamed 'Dr. J'.",
     "Wears number 6." ] , teams:["VAS","BKN","PHI"] },
-  { name:"David Robinson", hints:[
+  { name:"David Robinson", fact:"He scored 71 points on the last day of the 1993-94 season to win the scoring title over Shaquille O'Neal.", hints:[
     "Averaged 21.1 points per game for his NBA career.",
     "Attended the United States Naval Academy.",
     "Pick #1, 1987 NBA Draft.",
@@ -921,7 +927,7 @@ const PLAYERS = [
     "Won two championships late in his career alongside a younger star teammate.",
     "Nicknamed 'The Admiral'.",
     "Wears number 50." ] , teams:["SAS"] },
-  { name:"Steve Nash", hints:[
+  { name:"Steve Nash", fact:"He grew up playing soccer and ice hockey and took up basketball relatively late.", hints:[
     "Averaged 14.3 points per game for his NBA career.",
     "Attended Santa Clara University.",
     "Pick #15, 1996 NBA Draft.",
@@ -930,7 +936,7 @@ const PLAYERS = [
     "Won back-to-back MVP awards despite never reaching a Finals.",
     "Known by his own name, with no widely used nickname.",
     "Wears number 13." ] , teams:["PHX","DAL","PHX","LAL"] },
-  { name:"Dominique Wilkins", hints:[
+  { name:"Dominique Wilkins", fact:"He was born in Paris, France, before growing up in North Carolina.", hints:[
     "Averaged 24.8 points per game for his NBA career.",
     "Attended the University of Georgia.",
     "Pick #3, 1982 NBA Draft.",
@@ -939,7 +945,7 @@ const PLAYERS = [
     "Won a legendary Slam Dunk Contest battle against a rival.",
     "Nicknamed 'The Human Highlight Film'.",
     "Wears number 21." ] , teams:["ATL","LAC","BOS","SAS","ORL"] },
-  { name:"Draymond Green", hints:[
+  { name:"Draymond Green", fact:"In 2017 he recorded a triple-double with just 4 points, adding 12 rebounds, 10 assists, and 10 steals.", hints:[
     "Averaging about 8.5 points per game for his NBA career.",
     "Attended Michigan State University.",
     "Pick #35, 2012 NBA Draft.",
@@ -948,7 +954,7 @@ const PLAYERS = [
     "Won Defensive Player of the Year.",
     "Nicknamed 'Dray'.",
     "Wears number 23." ] , teams:["GSW"] },
-  { name:"Marcus Smart", hints:[
+  { name:"Marcus Smart", fact:"In 2022 he became the first guard to win Defensive Player of the Year since Gary Payton in 1996.", hints:[
     "Averaging about 10.5 points per game for his NBA career.",
     "Attended Oklahoma State University.",
     "Pick #6, 2014 NBA Draft.",
@@ -957,7 +963,7 @@ const PLAYERS = [
     "Won Defensive Player of the Year.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 36." ] , teams:["BOS","MEM","WAS","LAL","HOU"] },
-  { name:"Tony Allen", hints:[
+  { name:"Tony Allen", fact:"He was a core piece of Memphis' 'Grit and Grind' teams alongside Zach Randolph, Marc Gasol, and Mike Conley.", hints:[
     "Averaged 8.5 points per game for his NBA career.",
     "Attended Oklahoma State University.",
     "Pick #25, 2004 NBA Draft.",
@@ -966,7 +972,7 @@ const PLAYERS = [
     "Named to the NBA All-Defensive Team multiple times.",
     "Nicknamed 'The Grindfather'.",
     "Wears number 9." ] , teams:["BOS","MEM","NOP"], wiki:"Tony_Allen_(basketball)" },
-  { name:"Robert Horry", hints:[
+  { name:"Robert Horry", fact:"In Game 4 of the 2002 Western Conference Finals he hit a buzzer-beating three-pointer that turned the series against the Kings.", hints:[
     "Averaged 7.0 points per game for his NBA career.",
     "Attended the University of Alabama.",
     "Pick #11, 1992 NBA Draft.",
@@ -975,7 +981,7 @@ const PLAYERS = [
     "Won seven championships despite never making an All-Star team.",
     "Nicknamed 'Big Shot Rob'.",
     "Wears number 5." ] , teams:["HOU","PHX","LAL","SAS"] },
-  { name:"Danny Green", hints:[
+  { name:"Danny Green", fact:"In the 2013 Finals he made 27 three-pointers, a Finals record at the time.", hints:[
     "Averaged 8.0 points per game for his NBA career.",
     "Attended the University of North Carolina.",
     "Pick #46, 2009 NBA Draft.",
@@ -984,7 +990,7 @@ const PLAYERS = [
     "Won championships with three different franchises.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 14." ] , teams:["CLE","SAS","TOR","LAL","PHI","MEM"] },
-  { name:"P.J. Tucker", hints:[
+  { name:"P.J. Tucker", fact:"He's famous for one of the biggest sneaker collections in the NBA, and he played several years overseas before sticking in the league.", hints:[
     "Averaged 5.5 points per game for his NBA career.",
     "Attended the University of Texas.",
     "Pick #35, 2006 NBA Draft.",
@@ -993,7 +999,7 @@ const PLAYERS = [
     "Known for guarding the opposing team's best player regardless of size difference.",
     "Goes by his initials rather than a separate nickname.",
     "Wears number 17." ] , teams:["PHX","TOR","HOU","MIL","PHI","LAC"] },
-  { name:"Patrick Beverley", hints:[
+  { name:"Patrick Beverley", fact:"He played professionally in Ukraine, Greece, and Russia before ever reaching the NBA.", hints:[
     "Averaged 8.0 points per game for his NBA career.",
     "Attended the University of Arkansas.",
     "Pick #42, 2009 NBA Draft.",
@@ -1002,7 +1008,7 @@ const PLAYERS = [
     "Named to the NBA All-Defensive Team.",
     "Nicknamed 'Pat Bev'.",
     "Wears number 21." ] , teams:["HOU","LAC","MIN","CHI","LAL"] },
-  { name:"Shane Battier", hints:[
+  { name:"Shane Battier", fact:"Author Michael Lewis wrote a famous profile of him called 'The No-Stats All-Star' about how he helped teams win without big numbers.", hints:[
     "Averaged 8.6 points per game for his NBA career.",
     "Attended Duke University.",
     "Pick #6, 2001 NBA Draft.",
@@ -1011,7 +1017,7 @@ const PLAYERS = [
     "Won two championships as a role player alongside a superstar trio.",
     "Nicknamed 'The Secretary of Defense'.",
     "Wears number 31." ] , teams:["MEM","HOU","MIA"] },
-  { name:"Bruce Bowen", hints:[
+  { name:"Bruce Bowen", fact:"He went undrafted and played overseas and in the minor leagues before earning an NBA spot.", hints:[
     "Averaged 6.4 points per game for his NBA career.",
     "Attended Cal State Fullerton.",
     "Went undrafted in 1993.",
@@ -1020,7 +1026,7 @@ const PLAYERS = [
     "Named to the NBA All-Defensive Team eight times.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 12." ] , teams:["MIA","BOS","PHI","SAS"] },
-  { name:"Mike Conley", hints:[
+  { name:"Mike Conley", fact:"His father, Mike Conley Sr., won an Olympic gold medal in the triple jump in 1992.", hints:[
     "Averaging about 13.5 points per game for his NBA career.",
     "Attended Ohio State University.",
     "Pick #4, 2007 NBA Draft.",
@@ -1029,7 +1035,7 @@ const PLAYERS = [
     "Won the NBA Sportsmanship Award multiple times.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 11." ] , teams:["MEM","UTA","MIN","BOS"], wiki:"Mike_Conley_Jr." },
-  { name:"Marc Gasol", hints:[
+  { name:"Marc Gasol", fact:"He was part of the 2008 trade that sent his older brother Pau to the Lakers, and he won a title with the Raptors in 2019.", hints:[
     "Averaged 13.4 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #48, 2007 NBA Draft.",
@@ -1038,7 +1044,7 @@ const PLAYERS = [
     "Won Defensive Player of the Year.",
     "Nicknamed 'Big Spain'.",
     "Wears number 33." ] , teams:["MEM","TOR","LAL"] },
-  { name:"Al Horford", hints:[
+  { name:"Al Horford", fact:"He won back-to-back NCAA championships at Florida in 2006 and 2007.", hints:[
     "Averaging about 12.5 points per game for his NBA career.",
     "Attended the University of Florida.",
     "Pick #3, 2007 NBA Draft.",
@@ -1047,7 +1053,7 @@ const PLAYERS = [
     "Won an NBA championship late in his career.",
     "Nicknamed 'Big Al'.",
     "Wears number 15." ] , teams:["ATL","BOS","PHI","OKC","BOS"] },
-  { name:"Udonis Haslem", hints:[
+  { name:"Udonis Haslem", fact:"He played 20 seasons, all with his hometown Heat, before retiring in 2023.", hints:[
     "Averaged 5.3 points per game for his NBA career.",
     "Attended the University of Florida.",
     "Went undrafted in 2002.",
@@ -1056,7 +1062,7 @@ const PLAYERS = [
     "Won three championships with that same hometown team.",
     "Nicknamed 'UD'.",
     "Wears number 40." ] , teams:["MIA"] },
-  { name:"Tayshaun Prince", hints:[
+  { name:"Tayshaun Prince", fact:"His chase-down block on Reggie Miller in the 2004 Eastern Conference Finals is one of the most famous defensive plays in playoff history.", hints:[
     "Averaged 11.3 points per game for his NBA career.",
     "Attended the University of Kentucky.",
     "Pick #23, 2002 NBA Draft.",
@@ -1065,7 +1071,7 @@ const PLAYERS = [
     "Won a championship as part of a defense-first starting five.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 22." ] , teams:["DET","MEM","BOS","MIN"] },
-  { name:"Trevor Ariza", hints:[
+  { name:"Trevor Ariza", fact:"He started for the 2009 champion Lakers and, nine years later, for the 2018 Rockets team that pushed the Warriors to a Game 7.", hints:[
     "Averaged 8.5 points per game for his NBA career.",
     "Attended UCLA.",
     "Pick #43, 2004 NBA Draft.",
@@ -1074,7 +1080,7 @@ const PLAYERS = [
     "Won a championship as a key perimeter defender.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 1." ] , teams:["NYK","ORL","LAL","HOU","CHA","WAS","PHX","SAC","POR","MIA"] },
-  { name:"Thabo Sefolosha", hints:[
+  { name:"Thabo Sefolosha", fact:"He started his pro career in Switzerland and later played in France and Italy before the NBA.", hints:[
     "Averaged 6.0 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #13, 2006 NBA Draft.",
@@ -1083,7 +1089,7 @@ const PLAYERS = [
     "Named to the NBA All-Defensive Team.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 25." ] , teams:["OKC","ATL","UTA","HOU"] },
-  { name:"Jae Crowder", hints:[
+  { name:"Jae Crowder", fact:"He played at two junior colleges before Marquette, and his Howard College team won the school's first-ever national title in 2010.", hints:[
     "Averaged 9.5 points per game for his NBA career.",
     "Attended Marquette University.",
     "Pick #34, 2012 NBA Draft.",
@@ -1092,7 +1098,7 @@ const PLAYERS = [
     "Named to the NBA All-Defensive Team.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 99." ] , teams:["DAL","CLE","BOS","UTA","PHX","MEM","BKN","MIL","MIA"] },
-  { name:"Derrick White", hints:[
+  { name:"Derrick White", fact:"He started his college career at Division II Colorado-Colorado Springs before transferring to Colorado.", hints:[
     "Averaging about 11.5 points per game for his NBA career.",
     "Attended the University of Colorado.",
     "Pick #29, 2017 NBA Draft.",
@@ -1101,7 +1107,7 @@ const PLAYERS = [
     "Won an NBA championship.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 9." ] , teams:["SAS","BOS"] },
-  { name:"Tracy McGrady", hints:[
+  { name:"Tracy McGrady", fact:"In December 2004 he scored 13 points in just 33 seconds to beat the Spurs.", hints:[
     "Averaged 19.6 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #9, 1997 NBA Draft.",
@@ -1110,7 +1116,7 @@ const PLAYERS = [
     "Won back-to-back NBA scoring titles.",
     "Nicknamed 'T-Mac'.",
     "Wears number 1." ] , teams:["TOR","ORL","HOU","NYK","DET","ATL","SAS"] },
-  { name:"Paul Pierce", hints:[
+  { name:"Paul Pierce", fact:"Shaquille O'Neal gave him the nickname 'The Truth' after Pierce scored 42 points against the Lakers in 2001.", hints:[
     "Averaged 19.7 points per game for his NBA career.",
     "Attended the University of Kansas.",
     "Pick #10, 1998 NBA Draft.",
@@ -1119,7 +1125,7 @@ const PLAYERS = [
     "Won Finals MVP leading a championship core alongside two other future Hall of Famers.",
     "Nicknamed 'The Truth'.",
     "Wears number 34." ] , teams:["BOS","BKN","WAS","LAC"] },
-  { name:"Kevin Love", hints:[
+  { name:"Kevin Love", fact:"In 2010 he had 31 points and 31 rebounds in a game, the first 30-30 game since Moses Malone in 1982.", hints:[
     "Averaged 17.0 points per game for his NBA career.",
     "Attended UCLA.",
     "Pick #5, 2008 NBA Draft.",
@@ -1128,7 +1134,7 @@ const PLAYERS = [
     "Won an NBA championship that ended a 52-year title drought for his franchise.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 0." ] , teams:["MIN","CLE","MIA","UTA"] },
-  { name:"Blake Griffin", hints:[
+  { name:"Blake Griffin", fact:"In the 2011 Slam Dunk Contest he jumped over a Kia while a gospel choir sang.", hints:[
     "Averaged 19.0 points per game for his NBA career.",
     "Attended the University of Oklahoma.",
     "Pick #1, 2009 NBA Draft.",
@@ -1137,7 +1143,7 @@ const PLAYERS = [
     "Won Rookie of the Year and a famous Slam Dunk Contest involving a car.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 32." ] , teams:["LAC","DET","BOS"] },
-  { name:"DeMar DeRozan", hints:[
+  { name:"DeMar DeRozan", fact:"He scored 52 points against the Bucks in 2018, a Raptors franchise record.", hints:[
     "Averaging about 21.5 points per game for his NBA career.",
     "Attended the University of Southern California.",
     "Pick #9, 2009 NBA Draft.",
@@ -1146,7 +1152,7 @@ const PLAYERS = [
     "Named to multiple All-NBA teams despite rarely attempting three-pointers.",
     "Nicknamed 'DeMar'.",
     "Wears number 10." ] , teams:["TOR","SAS","CHI","SAC"] },
-  { name:"Zach Randolph", hints:[
+  { name:"Zach Randolph", fact:"He and Marc Gasol anchored Memphis' 'Grit and Grind' era, and the Grizzlies retired his number 50 in 2021.", hints:[
     "Averaged 17.1 points per game for his NBA career.",
     "Attended Michigan State University.",
     "Pick #19, 2001 NBA Draft.",
@@ -1155,7 +1161,7 @@ const PLAYERS = [
     "Anchored a physical, bruising frontcourt known for its gritty style of play.",
     "Nicknamed 'Z-Bo'.",
     "Wears number 50." ] , teams:["POR","NYK","LAC","MEM","SAC"] },
-  { name:"Rajon Rondo", hints:[
+  { name:"Rajon Rondo", fact:"Fans nicknamed him 'Playoff Rondo' for raising his game in the postseason.", hints:[
     "Averaged 9.8 points per game for his NBA career.",
     "Attended the University of Kentucky.",
     "Pick #21, 2006 NBA Draft.",
@@ -1164,7 +1170,7 @@ const PLAYERS = [
     "Won championships with two different franchises.",
     "Nicknamed 'Rondo'.",
     "Wears number 9." ] , teams:["BOS","DAL","SAC","CHI","NOP","LAL","ATL","LAC","CLE"] },
-  { name:"Joakim Noah", hints:[
+  { name:"Joakim Noah", fact:"His father, Yannick Noah, won the 1983 French Open in tennis, and his mother is a former Miss Sweden.", hints:[
     "Averaged 8.8 points per game for his NBA career.",
     "Attended the University of Florida.",
     "Pick #9, 2007 NBA Draft.",
@@ -1173,7 +1179,7 @@ const PLAYERS = [
     "Won Defensive Player of the Year.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 13." ] , teams:["CHI","NYK","MEM","LAC"] },
-  { name:"Gilbert Arenas", hints:[
+  { name:"Gilbert Arenas", fact:"He averaged 29.3 points per game in 2005-06 and made three straight All-Star teams with the Wizards.", hints:[
     "Averaged 20.7 points per game for his NBA career.",
     "Attended the University of Arizona.",
     "Pick #31, 2001 NBA Draft.",
@@ -1182,7 +1188,7 @@ const PLAYERS = [
     "Scored 60 points in a single game.",
     "Nicknamed 'Agent Zero'.",
     "Wears number 0." ] , teams:["GSW","WAS","ORL","MEM"] },
-  { name:"Baron Davis", hints:[
+  { name:"Baron Davis", fact:"He led the eighth-seeded 'We Believe' Warriors past the top-seeded Mavericks in the 2007 playoffs.", hints:[
     "Averaged 16.1 points per game for his NBA career.",
     "Attended UCLA.",
     "Pick #3, 1999 NBA Draft.",
@@ -1191,7 +1197,7 @@ const PLAYERS = [
     "Delivered one of the most iconic dunks in NBA playoff history.",
     "Nicknamed 'B-Diddy'.",
     "Wears number 1." ] , teams:["CHA","GSW","LAC","NYK","CLE"] },
-  { name:"Joe Johnson", hints:[
+  { name:"Joe Johnson", fact:"After the NBA he became a three-time MVP of the BIG3 3-on-3 league and hit the championship-winning shot in 2019.", hints:[
     "Averaged 16.9 points per game for his NBA career.",
     "Attended the University of Arkansas.",
     "Pick #10, 2001 NBA Draft.",
@@ -1200,7 +1206,7 @@ const PLAYERS = [
     "Named to seven All-Star teams despite rarely being considered a true superstar.",
     "Nicknamed 'Joe Jesus' and 'Iso Joe'.",
     "Wears number 2." ] , teams:["BOS","PHX","ATL","BKN","MIA","UTA","HOU","DET"] },
-  { name:"Andre Iguodala", hints:[
+  { name:"Andre Iguodala", fact:"In 2015 he became the first Finals MVP who hadn't started a single game in the regular season.", hints:[
     "Averaged 11.5 points per game for his NBA career.",
     "Attended the University of Arizona.",
     "Pick #9, 2004 NBA Draft.",
@@ -1209,7 +1215,7 @@ const PLAYERS = [
     "Won Finals MVP as a role player rather than his team's leading scorer.",
     "Nicknamed 'Iggy'.",
     "Wears number 9." ] , teams:["PHI","DEN","GSW","MIA"] },
-  { name:"Klay Thompson", hints:[
+  { name:"Klay Thompson", fact:"In January 2015 he scored an NBA-record 37 points in a single quarter.", hints:[
     "Averaging about 19.5 points per game for his NBA career.",
     "Attended Washington State University.",
     "Pick #11, 2011 NBA Draft.",
@@ -1218,7 +1224,7 @@ const PLAYERS = [
     "Once made 14 three-pointers in a single game, an NBA record at the time.",
     "Nicknamed 'Klay'.",
     "Wears number 11." ] , teams:["GSW","DAL","MIA"] },
-  { name:"Bradley Beal", hints:[
+  { name:"Bradley Beal", fact:"He led the NBA in scoring in 2020-21 at 31.3 points per game.", hints:[
     "Averaging about 22.0 points per game for his NBA career.",
     "Attended the University of Florida.",
     "Pick #3, 2012 NBA Draft.",
@@ -1227,7 +1233,7 @@ const PLAYERS = [
     "Scored a career-high 60 points in a single game, tying a franchise record.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 3." ] , teams:["WAS","PHX","LAC"] },
-  { name:"Jrue Holiday", hints:[
+  { name:"Jrue Holiday", fact:"He has won two Olympic gold medals with Team USA, at the Tokyo and Paris Games.", hints:[
     "Averaging about 16.0 points per game for his NBA career.",
     "Attended UCLA.",
     "Pick #17, 2009 NBA Draft.",
@@ -1236,7 +1242,7 @@ const PLAYERS = [
     "Won championships with two different franchises.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 4." ] , teams:["PHI","NOP","MIL","BOS","POR"] },
-  { name:"Derrick Rose", hints:[
+  { name:"Derrick Rose", fact:"He scored 50 points in a game in 2018, a memorable comeback moment after years of injuries.", hints:[
     "Averaged 17.2 points per game for his NBA career.",
     "Attended the University of Memphis.",
     "Pick #1, 2008 NBA Draft.",
@@ -1245,7 +1251,7 @@ const PLAYERS = [
     "Became the youngest NBA MVP ever at the time he won it.",
     "Nicknamed 'Pooh'.",
     "Wears number 1." ] , teams:["CHI","NYK","CLE","MIN","DET","MEM"] },
-  { name:"Nikola Vucevic", hints:[
+  { name:"Nikola Vucevic", fact:"He was born in Morges, Switzerland, and plays internationally for Montenegro.", hints:[
     "Averaging about 17.5 points per game for his NBA career.",
     "Attended the University of Southern California.",
     "Pick #16, 2011 NBA Draft.",
@@ -1254,7 +1260,7 @@ const PLAYERS = [
     "Named to multiple All-Star teams.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 9." ] , teams:["ORL","CHI","BOS","ORL"] },
-  { name:"Kyle Lowry", hints:[
+  { name:"Kyle Lowry", fact:"The Raptors announced they'll retire his number 7, only the second jersey number the franchise has retired.", hints:[
     "Averaged 14.0 points per game for his NBA career.",
     "Attended Villanova University.",
     "Pick #24, 2006 NBA Draft.",
@@ -1263,7 +1269,7 @@ const PLAYERS = [
     "Won an NBA championship as the floor leader of his franchise's only title team.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 7." ] , teams:["MEM","HOU","TOR","MIA","PHI","TOR"] },
-  { name:"Jimmy Butler", hints:[
+  { name:"Jimmy Butler", fact:"He founded his own coffee brand, Big Face Coffee, named after his nickname.", hints:[
     "Averaging about 18.0 points per game for his NBA career.",
     "Attended Marquette University.",
     "Pick #30, 2011 NBA Draft.",
@@ -1272,7 +1278,7 @@ const PLAYERS = [
     "Led a star-less roster to the NBA Finals as the clear best player on the floor.",
     "Nicknamed 'Jimmy Buckets'.",
     "Wears number 22." ] , teams:["CHI","MIN","PHI","MIA","GSW"] },
-  { name:"Donovan Mitchell", hints:[
+  { name:"Donovan Mitchell", fact:"His father, Donovan Sr., works for the New York Mets, and Donovan grew up in New York's Westchester County.", hints:[
     "Averaging about 25.0 points per game for his NBA career.",
     "Attended the University of Louisville.",
     "Pick #13, 2017 NBA Draft.",
@@ -1281,7 +1287,7 @@ const PLAYERS = [
     "Won the Slam Dunk Contest as a rookie.",
     "Nicknamed 'Spida'.",
     "Wears number 45." ] , teams:["UTA","CLE"] },
-  { name:"Pau Gasol", hints:[
+  { name:"Pau Gasol", fact:"He studied medicine at the University of Barcelona before turning to basketball full time.", hints:[
     "Averaged 17.0 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #3, 2001 NBA Draft.",
@@ -1290,7 +1296,7 @@ const PLAYERS = [
     "Won back-to-back championships alongside a legendary scoring guard.",
     "Goes by his own name rather than a separate nickname.",
     "Wore number 16." ] , teams:["MEM","LAL","CHI","SAS","MIL"] },
-  { name:"Chauncey Billups", hints:[
+  { name:"Chauncey Billups", fact:"His 2004 Pistons beat the Lakers in the Finals without a single player averaging 20 points per game.", hints:[
     "Averaged 15.2 points per game for his NBA career.",
     "Attended the University of Colorado.",
     "Pick #3, 1997 NBA Draft.",
@@ -1299,7 +1305,7 @@ const PLAYERS = [
     "Won Finals MVP in an upset over a heavily favored superstar team.",
     "Nicknamed 'Mr. Big Shot'.",
     "Wore number 1." ] , teams:["BOS","TOR","DEN","MIN","DET","DEN","NYK","LAC","DET"] },
-  { name:"Ben Wallace", hints:[
+  { name:"Ben Wallace", fact:"At 6'9\", he's among the shortest players ever to win Defensive Player of the Year.", hints:[
     "Averaged 5.7 points per game for his NBA career.",
     "Attended Virginia Union University.",
     "Went undrafted in 1996.",
@@ -1308,7 +1314,7 @@ const PLAYERS = [
     "Won Defensive Player of the Year four times.",
     "Nicknamed 'Big Ben'.",
     "Wore number 3." ] , teams:["WAS","ORL","DET","CHI","CLE","DET"], wiki:"Ben_Wallace_(basketball)" },
-  { name:"Tim Hardaway", hints:[
+  { name:"Tim Hardaway", fact:"His killer crossover was nicknamed the 'UTEP Two-Step' after his college.", hints:[
     "Averaged 17.7 points per game for his NBA career.",
     "Attended the University of Texas at El Paso.",
     "Pick #14, 1989 NBA Draft.",
@@ -1317,7 +1323,7 @@ const PLAYERS = [
     "Part of a high-scoring trio nicknamed for the initials of its three members.",
     "Goes by his own name rather than a separate nickname.",
     "Wore number 10." ] , teams:["GSW","MIA","DAL","DEN","IND"] },
-  { name:"Kevin McHale", hints:[
+  { name:"Kevin McHale", fact:"As an executive, he drafted Kevin Garnett for Minnesota and later traded him to his old team, the Celtics.", hints:[
     "Averaged 17.9 points per game for his NBA career.",
     "Attended the University of Minnesota.",
     "Pick #3, 1980 NBA Draft.",
@@ -1326,7 +1332,7 @@ const PLAYERS = [
     "Won three championships and two Sixth Man of the Year awards.",
     "Nicknamed 'The Black Hole'.",
     "Wore number 32." ] , teams:["BOS"], wiki:"Kevin_McHale_(basketball)" },
-  { name:"James Worthy", hints:[
+  { name:"James Worthy", fact:"He was the Most Outstanding Player of the 1982 Final Four, the game where freshman Michael Jordan hit the winning shot.", hints:[
     "Averaged 17.6 points per game for his NBA career.",
     "Attended the University of North Carolina.",
     "Pick #1, 1982 NBA Draft.",
@@ -1335,7 +1341,7 @@ const PLAYERS = [
     "Won Finals MVP after a Game 7 triple-double.",
     "Nicknamed 'Big Game James'.",
     "Wore number 42." ] , teams:["LAL"] },
-  { name:"Gary Payton", hints:[
+  { name:"Gary Payton", fact:"His son, Gary Payton II, also played in the NBA and won a title with the Warriors in 2022.", hints:[
     "Averaged 16.3 points per game for his NBA career.",
     "Attended Oregon State University.",
     "Pick #2, 1990 NBA Draft.",
@@ -1344,7 +1350,7 @@ const PLAYERS = [
     "Won Defensive Player of the Year as a point guard.",
     "Nicknamed 'The Glove'.",
     "Wore number 20." ] , teams:["SEA","MIL","LAL","BOS","MIA"] },
-  { name:"Alonzo Mourning", hints:[
+  { name:"Alonzo Mourning", fact:"The Heat retired his number 33 in 2009.", hints:[
     "Averaged 17.1 points per game for his NBA career.",
     "Attended Georgetown University.",
     "Pick #2, 1992 NBA Draft.",
@@ -1353,7 +1359,7 @@ const PLAYERS = [
     "Won two Defensive Player of the Year awards, then a championship after a kidney transplant.",
     "Nicknamed 'Zo'.",
     "Wore number 33." ] , teams:["CHA","MIA","BKN","MIA"] },
-  { name:"Penny Hardaway", hints:[
+  { name:"Penny Hardaway", fact:"He became head coach of his alma mater, Memphis, in 2018.", hints:[
     "Averaged 15.2 points per game for his NBA career.",
     "Attended the University of Memphis.",
     "Pick #3, 1993 NBA Draft.",
@@ -1362,7 +1368,7 @@ const PLAYERS = [
     "Led his team to the NBA Finals in his second season alongside a dominant center.",
     "Goes by a childhood nickname instead of his given first name, Anfernee.",
     "Wore number 1." ] , teams:["ORL","PHX","NYK","MIA"] },
-  { name:"Chris Webber", hints:[
+  { name:"Chris Webber", fact:"He was a member of Michigan's famed 'Fab Five' recruiting class.", hints:[
     "Averaged 20.7 points per game for his NBA career.",
     "Attended the University of Michigan.",
     "Pick #1, 1993 NBA Draft.",
@@ -1371,7 +1377,7 @@ const PLAYERS = [
     "Made five All-Star teams, and famously called a timeout his team didn't have in a national title game.",
     "Nicknamed 'C-Webb'.",
     "Wore number 4." ] , teams:["GSW","WAS","SAC","PHI","DET","GSW"] },
-  { name:"Manu Ginobili", hints:[
+  { name:"Manu Ginobili", fact:"He led Argentina to the 2004 Olympic gold medal, beating the United States in the semifinals.", hints:[
     "Averaged 13.3 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #57, 1999 NBA Draft.",
@@ -1380,7 +1386,7 @@ const PLAYERS = [
     "Won four championships and a Sixth Man of the Year award.",
     "Goes by his own name rather than a separate nickname.",
     "Wore number 20." ] , teams:["SAS"] },
-  { name:"Tony Parker", hints:[
+  { name:"Tony Parker", fact:"He was born in Belgium and raised in France, and he was the first European-born Finals MVP.", hints:[
     "Averaged 15.5 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #28, 2001 NBA Draft.",
@@ -1389,7 +1395,7 @@ const PLAYERS = [
     "Won Finals MVP and four championships.",
     "Nicknamed 'TP'.",
     "Wore number 9." ] , teams:["SAS","CHA"] },
-  { name:"Lamar Odom", hints:[
+  { name:"Lamar Odom", fact:"At 6'10\" he was a rare 'point forward' who could handle the ball and run an offense.", hints:[
     "Averaged 13.3 points per game for his NBA career.",
     "Attended the University of Rhode Island.",
     "Pick #4, 1999 NBA Draft.",
@@ -1398,7 +1404,7 @@ const PLAYERS = [
     "Won two championships and Sixth Man of the Year.",
     "Goes by his own name rather than a separate nickname.",
     "Wore number 7." ] , teams:["LAC","MIA","LAL","DAL","LAC"] },
-  { name:"Amar'e Stoudemire", hints:[
+  { name:"Amar'e Stoudemire", fact:"After the NBA he played in Israel for Hapoel Jerusalem and later became an assistant coach for the Brooklyn Nets.", hints:[
     "Averaged 18.9 points per game for his NBA career.",
     "Didn't attend college.",
     "Pick #9, 2002 NBA Draft.",
@@ -1407,7 +1413,7 @@ const PLAYERS = [
     "Won Rookie of the Year and made six All-Star teams.",
     "Nicknamed 'STAT'.",
     "Wore number 32 and number 1." ] , teams:["PHX","NYK","DAL","MIA"] },
-  { name:"Jason Kidd", hints:[
+  { name:"Jason Kidd", fact:"As a coach he led the Mavericks to the 2024 NBA Finals.", hints:[
     "Averaged 12.6 points per game for his NBA career.",
     "Attended the University of California.",
     "Pick #2, 1994 NBA Draft.",
@@ -1416,7 +1422,7 @@ const PLAYERS = [
     "Made ten All-Star teams and won a championship late in his career.",
     "Nicknamed 'J-Kidd'.",
     "Wore number 5." ] , teams:["DAL","PHX","BKN","DAL","NYK"] },
-  { name:"Jamal Crawford", hints:[
+  { name:"Jamal Crawford", fact:"He holds the NBA record for career four-point plays.", hints:[
     "Averaged 14.6 points per game for his NBA career.",
     "Attended the University of Michigan.",
     "Pick #8, 2000 NBA Draft.",
@@ -1425,7 +1431,7 @@ const PLAYERS = [
     "Won Sixth Man of the Year three times, an NBA record.",
     "Nicknamed 'J-Crossover'.",
     "Wore number 11." ] , teams:["CHI","NYK","GSW","ATL","POR","LAC","MIN","PHX","BKN"] },
-  { name:"Dikembe Mutombo", hints:[
+  { name:"Dikembe Mutombo", fact:"He built a hospital in his native Democratic Republic of the Congo, opened in 2007 and named for his mother.", hints:[
     "Averaged 9.8 points per game for his NBA career.",
     "Attended Georgetown University.",
     "Pick #4, 1991 NBA Draft.",
@@ -1434,7 +1440,7 @@ const PLAYERS = [
     "Won Defensive Player of the Year four times.",
     "Nicknamed 'Mount Mutombo'.",
     "Wore number 55." ] , teams:["DEN","ATL","PHI","BKN","NYK","HOU"] },
-  { name:"Jaylen Brown", hints:[
+  { name:"Jaylen Brown", fact:"In 2023 he signed a five-year, roughly $304 million contract, the largest in NBA history at the time.", hints:[
     "Averaging about 20.0 points per game for his NBA career.",
     "Attended the University of California.",
     "Pick #3, 2016 NBA Draft.",
@@ -1443,7 +1449,7 @@ const PLAYERS = [
     "Won Finals MVP as his team ended a 16-year title drought.",
     "Goes by his own name rather than a separate nickname.",
     "Has worn number 7 for most of his career." ] , teams:["BOS","PHI"] },
-  { name:"Bam Adebayo", hints:[
+  { name:"Bam Adebayo", fact:"He was born in Newark, New Jersey, and raised in North Carolina.", hints:[
     "Averaging about 15.5 points per game for his NBA career.",
     "Attended the University of Kentucky.",
     "Pick #14, 2017 NBA Draft.",
@@ -1452,7 +1458,7 @@ const PLAYERS = [
     "Won two Olympic gold medals with Team USA.",
     "Goes by 'Bam' instead of his given first name, Edrice.",
     "Wears number 13." ] , teams:["MIA"] },
-  { name:"Pascal Siakam", hints:[
+  { name:"Pascal Siakam", fact:"He grew up in Cameroon intending to become a priest and only started playing basketball seriously at 16.", hints:[
     "Averaging about 18.0 points per game for his NBA career.",
     "Attended New Mexico State University.",
     "Pick #27, 2016 NBA Draft.",
@@ -1461,7 +1467,7 @@ const PLAYERS = [
     "Won an NBA championship and Most Improved Player in the same season.",
     "Nicknamed 'Spicy P'.",
     "Wears number 43." ] , teams:["TOR","IND"] },
-  { name:"De'Aaron Fox", hints:[
+  { name:"De'Aaron Fox", fact:"At Kentucky in 2016-17 he played alongside Bam Adebayo and Malik Monk, and all three were first-round picks in 2017.", hints:[
     "Averaging about 20.0 points per game for his NBA career.",
     "Attended the University of Kentucky.",
     "Pick #5, 2017 NBA Draft.",
@@ -1470,7 +1476,7 @@ const PLAYERS = [
     "Won the NBA's first-ever Clutch Player of the Year award.",
     "Nicknamed 'Swipa'.",
     "Wore number 5 for most of his career." ] , teams:["SAC","SAS"] },
-  { name:"Julius Randle", hints:[
+  { name:"Julius Randle", fact:"He broke his leg in the first game of his NBA career and missed his entire rookie season.", hints:[
     "Averaging about 19.0 points per game for his NBA career.",
     "Attended the University of Kentucky.",
     "Pick #7, 2014 NBA Draft.",
@@ -1479,7 +1485,7 @@ const PLAYERS = [
     "Won Most Improved Player and made three All-Star teams.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 30." ] , teams:["LAL","NOP","NYK","MIN","BKN"] },
-  { name:"Domantas Sabonis", hints:[
+  { name:"Domantas Sabonis", fact:"His father, Hall of Famer Arvydas Sabonis, played in Portland when Domantas was born there in 1996, and Domantas represents Lithuania internationally.", hints:[
     "Averaging about 16.5 points per game for his NBA career.",
     "Attended Gonzaga University.",
     "Pick #11, 2016 NBA Draft.",
@@ -1488,7 +1494,7 @@ const PLAYERS = [
     "Led the NBA in rebounds per game.",
     "Goes by his own name rather than a separate nickname.",
     "Wears number 11." ] , teams:["OKC","IND","SAC"] },
-  { name:"Zach LaVine", hints:[
+  { name:"Zach LaVine", fact:"His 2016 Slam Dunk Contest duel with Aaron Gordon, full of perfect scores, is considered one of the best ever.", hints:[
     "Averaging about 20.0 points per game for his NBA career.",
     "Attended UCLA.",
     "Pick #13, 2014 NBA Draft.",
@@ -1753,6 +1759,8 @@ function endGame(won, doSync){
   }
   document.getElementById('revealProfileLink').href =
     'https://en.wikipedia.org/wiki/' + encodeURIComponent(puzzle.wiki || puzzle.name.replace(/ /g, '_'));
+  document.getElementById('funFactText').textContent = puzzle.fact || '';
+  document.getElementById('funFact').hidden = !puzzle.fact;
 
   resultCard.style.display = 'block';
   document.getElementById('adMid').classList.add('show');
