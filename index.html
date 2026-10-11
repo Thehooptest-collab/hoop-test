@@ -156,7 +156,7 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 .reveal-card a:hover{text-decoration:underline;}
 
 .hint-track{display:flex;gap:5px;margin-top:14px;}
-.pip{flex:1;height:6px;border-radius:3px;background:var(--line);}
+.pip{flex:1;height:6px;border-radius:3px;background:var(--line);transition:background .25s ease;}
 .pip.on{background:var(--ball);}
 
 .share-btn{
@@ -248,6 +248,15 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
 .cookie-bar button{background:var(--ball);color:#231502;padding:8px 16px;}
 
 [hidden]{display:none !important;}
+.streak-badge{display:inline-block;margin-top:10px;padding:4px 12px;border-radius:20px;background:rgba(227,166,61,.12);border:1px solid rgba(227,166,61,.35);color:var(--ball);font-size:12px;font-weight:600;}
+@keyframes hint-in{from{opacity:0;transform:translateY(-6px);background:rgba(227,166,61,.16);}to{opacity:1;transform:none;background:transparent;}}
+.hint-row.hint-new{animation:hint-in .45s ease-out;}
+.install-nudge{margin-top:14px;padding:12px 14px;border-radius:8px;background:var(--court);border:1px solid var(--line);text-align:left;font-size:13px;line-height:1.45;}
+.install-text strong{display:block;color:var(--net);font-size:14px;margin-bottom:2px;}
+.install-text span{color:var(--net-dim);}
+.install-actions{display:flex;align-items:center;gap:14px;margin-top:10px;}
+.install-go{background:var(--ball);color:#231502;padding:8px 16px;border-radius:7px;font-size:13px;}
+.install-actions .link-btn{color:var(--net-dim);font-size:13px;}
 .archive-back{display:block;margin-top:12px;font-size:13px;font-weight:600;color:var(--ball);text-decoration:none;}
 .archive-back:hover{text-decoration:underline;}
 .modal-top{display:flex;justify-content:space-between;align-items:center;gap:10px;}
@@ -296,6 +305,7 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
   <header>
     <h1 class="wordmark">THE HOOP<span>TEST</span></h1>
     <div class="sub" id="dateLabel">Daily NBA Trivia</div>
+    <div class="streak-badge" id="streakBadge" hidden></div>
     <div class="rim"></div>
     <button id="howToBtn" class="howto-btn">How to play</button>
     <button id="statsBtn" class="howto-btn">Stats</button>
@@ -349,6 +359,16 @@ input[type=text]:focus{outline:2px solid var(--ball);outline-offset:0;}
     <div class="countdown-note" id="countdownTimer"></div>
     <button class="share-btn" id="shareBtn">Copy result</button>
     <button class="share-btn share-btn-outline" id="shareImageBtn">Share image</button>
+    <div class="install-nudge" id="installNudge" hidden>
+      <div class="install-text">
+        <strong>Play daily from your home screen</strong>
+        <span id="installHow"></span>
+      </div>
+      <div class="install-actions">
+        <button type="button" class="install-go" id="installGo" hidden>Install</button>
+        <button type="button" class="link-btn" id="installDismiss">Not now</button>
+      </div>
+    </div>
   </div>
 
   <div class="footer-note">One player, once a day. 8 hints, scored by how few you need.</div>
@@ -1706,10 +1726,11 @@ function buildTeamPath(teamCodes){
   return path;
 }
 
+let animateHintIndex = -1; // set only while a hint is being revealed, so the others don't re-animate
 function renderHints(){
   hintListEl.innerHTML='';
   for(let i=0;i<8;i++){
-    const row=document.createElement('div'); row.className='hint-row';
+    const row=document.createElement('div'); row.className='hint-row' + (i === animateHintIndex ? ' hint-new' : '');
     const cat=document.createElement('div'); cat.className='hint-cat';
     cat.textContent=CATEGORIES[i];
     const text=document.createElement('div');
@@ -1778,6 +1799,8 @@ function endGame(won, doSync){
   } else {
     renderStatsLine(getLocalStats());
   }
+  renderStreakBadge();
+  if(doSync) maybeShowInstallNudge();
   leaderboardAfterFinish(record);
 }
 
@@ -1810,6 +1833,26 @@ function updateLocalStats(score, won, hints){
   };
   try{ localStorage.setItem('hooptest_stats_v1', JSON.stringify(next)); }catch(e){}
   return next;
+}
+// Pure: is the stored streak still alive today? It counts if you last finished today or
+// yesterday; anything older means it has lapsed (the saved number only resets on the next finish).
+function effectiveStreak(stats, todayKeyStr){
+  if(!stats || !stats.lastDate || !stats.streak) return {streak:0, playedToday:false};
+  const diff = Math.round((new Date(todayKeyStr) - new Date(stats.lastDate)) / 86400000);
+  if(diff === 0) return {streak: stats.streak, playedToday: true};
+  if(diff === 1) return {streak: stats.streak, playedToday: false};
+  return {streak:0, playedToday:false};
+}
+function renderStreakBadge(){
+  const el = document.getElementById('streakBadge');
+  if(!el) return;
+  const s = isArchive ? {streak:0} : effectiveStreak(getLocalStats(), todayKey);
+  if(s.streak < 1){ el.hidden = true; return; }
+  el.innerHTML = '';
+  const flame = document.createElement('span'); flame.setAttribute('aria-hidden', 'true'); flame.textContent = '🔥 ';
+  el.appendChild(flame);
+  el.appendChild(document.createTextNode(s.streak + '-day streak' + (s.playedToday ? '' : ' · play today to keep it going')));
+  el.hidden = false;
 }
 function renderStatsModal(){
   const s = getLocalStats();
@@ -1844,7 +1887,7 @@ function renderStatsLine(s){
 }
 
 revealBtn.addEventListener('click', ()=>{
-  if(hintsRevealed < 8){ hintsRevealed++; renderHints(); statusBox.classList.remove('show'); }
+  if(hintsRevealed < 8){ hintsRevealed++; animateHintIndex = hintsRevealed - 1; renderHints(); animateHintIndex = -1; statusBox.classList.remove('show'); }
 });
 
 function submitGuess(){
@@ -2148,7 +2191,8 @@ function summarizeDist(dist, myScore){
 }
 function percentileText(sum, myScore, isDaily){
   if(sum.total < MIN_PLAYERS_FOR_PERCENTILE){
-    return sum.total + ' player' + (sum.total === 1 ? '' : 's') + ' so far. Your percentile appears once ' + MIN_PLAYERS_FOR_PERCENTILE + ' have played.';
+    // Deliberately no head-count here: early on, a small number looks discouraging.
+    return isDaily ? "Nice work! Your percentile will appear as more players finish today's puzzle. Check back later." : '';
   }
   if(myScore === 0) return 'Tough one: ' + Math.round(sum.same / sum.total * 100) + '% of players missed it too.';
   return 'You beat ' + Math.round(sum.lower / sum.total * 100) + '% of players ' + (isDaily ? 'today' : 'on this puzzle') + '.';
@@ -2194,9 +2238,11 @@ async function leaderboardAfterFinish(record){
   if(!dist) return;
   lastDist = dist;
   const sum = summarizeDist(dist, record.score);
-  document.getElementById('percentileText').textContent = percentileText(sum, record.score, !isArchive);
-  document.getElementById('percentileMore').hidden = sum.total === 0;
-  document.getElementById('percentileNote').hidden = false;
+  const text = percentileText(sum, record.score, !isArchive);
+  document.getElementById('percentileText').textContent = text;
+  // The chart shows head-counts, so only offer it once there's a healthy sample.
+  document.getElementById('percentileMore').hidden = sum.total < MIN_PLAYERS_FOR_PERCENTILE;
+  document.getElementById('percentileNote').hidden = !text;
 }
 function renderResultsModal(){
   document.getElementById('resultsTitle').textContent = 'How everyone did · #' + playingNo;
@@ -2226,6 +2272,66 @@ document.getElementById('archiveBtn').addEventListener('click', renderArchiveMod
 setupModal(document.getElementById('archiveModal'), document.getElementById('archiveBtn'), document.getElementById('archiveClose'));
 document.getElementById('percentileMore').addEventListener('click', renderResultsModal);
 setupModal(document.getElementById('resultsModal'), document.getElementById('percentileMore'), document.getElementById('resultsClose'));
+
+// ---------------------------------------------------------------------------
+// Home-screen install nudge. Phones and tablets only, after the player's 3rd
+// finished daily puzzle, at most 3 times, and never again once dismissed.
+// Android Chrome can install in one tap; iPhones need the Share menu, so they
+// get instructions instead.
+// ---------------------------------------------------------------------------
+const INSTALL_DISMISSED_KEY = 'hooptest_install_dismissed', INSTALL_SHOWN_KEY = 'hooptest_install_shown';
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); deferredInstallPrompt = e; });
+window.addEventListener('appinstalled', ()=>{
+  try{ localStorage.setItem(INSTALL_DISMISSED_KEY, '1'); }catch(e){}
+  document.getElementById('installNudge').hidden = true;
+});
+function isStandaloneDisplay(){
+  return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+}
+function isIOSDevice(){
+  const ua = navigator.userAgent || '';
+  return /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+}
+function isTouchDevice(){ return !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches); }
+// Pure: returns 'prompt' (one-tap install), 'ios', 'menu' (generic instructions), or null (don't show).
+function installNudgeMode(env){
+  if(env.isArchive || env.standalone || env.dismissed || !env.touch) return null;
+  if(env.games < 3 || env.shownCount >= 3) return null;
+  if(env.hasPrompt) return 'prompt';
+  return env.ios ? 'ios' : 'menu';
+}
+function maybeShowInstallNudge(){
+  let dismissed = false, shown = 0;
+  try{ dismissed = !!localStorage.getItem(INSTALL_DISMISSED_KEY); shown = parseInt(localStorage.getItem(INSTALL_SHOWN_KEY) || '0', 10) || 0; }catch(e){}
+  const mode = installNudgeMode({
+    isArchive, dismissed, shownCount: shown, games: getLocalStats().games,
+    standalone: isStandaloneDisplay(), hasPrompt: !!deferredInstallPrompt, ios: isIOSDevice(), touch: isTouchDevice()
+  });
+  if(!mode) return;
+  document.getElementById('installHow').textContent =
+    mode === 'prompt' ? 'Install it for one-tap access every day.'
+    : mode === 'ios' ? 'Tap the Share button, then "Add to Home Screen."'
+    : 'Open your browser menu, then choose "Add to Home screen" or "Install app."';
+  document.getElementById('installGo').hidden = mode !== 'prompt';
+  document.getElementById('installNudge').hidden = false;
+  try{ localStorage.setItem(INSTALL_SHOWN_KEY, String(shown + 1)); }catch(e){}
+}
+document.getElementById('installDismiss').addEventListener('click', ()=>{
+  try{ localStorage.setItem(INSTALL_DISMISSED_KEY, '1'); }catch(e){}
+  document.getElementById('installNudge').hidden = true;
+});
+document.getElementById('installGo').addEventListener('click', async ()=>{
+  const evt = deferredInstallPrompt;
+  if(!evt) return;
+  deferredInstallPrompt = null;
+  try{
+    evt.prompt();
+    const choice = await evt.userChoice;
+    if(choice && choice.outcome === 'accepted'){ try{ localStorage.setItem(INSTALL_DISMISSED_KEY, '1'); }catch(e){} }
+  }catch(e){}
+  document.getElementById('installNudge').hidden = true;
+});
 
 // Countdown to the next puzzle (resets at local midnight, matching how
 // today's puzzle itself is selected). Only visible once the result card
@@ -2271,6 +2377,7 @@ try{
   }
 }catch(e){ renderHints(); renderMisses(); }
 if(!localRecord){ renderStatsLine(getLocalStats()); }
+renderStreakBadge();
 </script>
 </body>
 </html>
